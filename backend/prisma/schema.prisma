@@ -1,0 +1,316 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Goal {
+  WEIGHT_LOSS
+  MUSCLE_GAIN
+  MAINTENANCE
+  ATHLETIC_PERFORMANCE
+}
+
+enum ActivityLevel {
+  SEDENTARY
+  LIGHTLY_ACTIVE
+  MODERATELY_ACTIVE
+  VERY_ACTIVE
+  EXTREMELY_ACTIVE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+  EXPIRED
+}
+
+enum OrderStatus {
+  PENDING
+  PREPARING
+  READY
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum StaffRole {
+  SUPER_ADMIN
+  LOCATION_MANAGER
+  CHEF
+  DELIVERY_DRIVER
+  CUSTOMER_SUPPORT
+  NUTRITIONIST
+}
+
+model User {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  phone             String   @unique
+  passwordHash      String   @map("password_hash")
+  isPhoneVerified   Boolean  @default(false) @map("is_phone_verified")
+  firstName         String?  @map("first_name")
+  lastName          String?  @map("last_name")
+  
+  // Physical stats
+  age               Int?
+  gender            Gender?
+  currentWeight     Float?   @map("current_weight") // in kg
+  height            Int?     // in cm
+  targetWeight      Float?   @map("target_weight") // in kg
+  goal              Goal?
+  activityLevel     ActivityLevel? @map("activity_level")
+  
+  // Preferences stored as JSON
+  dietaryRestrictions Json?  @map("dietary_restrictions") // array of strings
+  allergies          Json?   // array of strings
+  foodDislikes       Json?   @map("food_dislikes") // array of strings
+  preferredCuisines  Json?   @map("preferred_cuisines") // array of strings
+  mealPreferences    Json?   @map("meal_preferences") // breakfast, lunch, dinner, snacks
+  
+  // Calculated nutrition goals (stored as JSON)
+  nutritionGoals    Json?   @map("nutrition_goals") // { calories, protein, carbs, fats }
+  
+  // Location and settings
+  locationId        String?  @map("location_id")
+  preferredLanguage String   @default("uz") @map("preferred_language") // uz, ru, en
+  
+  // Timestamps
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  location          Location?    @relation(fields: [locationId], references: [id])
+  subscriptions    Subscription[]
+  orders           Order[]
+  otpVerifications OTPVerification[]
+  payments         Payment[]
+  
+  @@map("users")
+}
+
+model OTPVerification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  phone     String
+  code      String
+  expiresAt DateTime @map("expires_at")
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("otp_verifications")
+}
+
+model Subscription {
+  id              String            @id @default(uuid())
+  userId          String            @map("user_id")
+  planType        String            @map("plan_type") // weekly (for MVP)
+  mealsPerDay     Int               @map("meals_per_day") // 1, 2, or 3
+  startDate       DateTime          @map("start_date")
+  endDate         DateTime?         @map("end_date")
+  status          SubscriptionStatus @default(ACTIVE)
+  
+  // Delivery preferences stored as JSON
+  deliveryDays    Json              @map("delivery_days") // array of day numbers (0-6)
+  deliveryTimeSlot String?          @map("delivery_time_slot") // morning, afternoon, evening
+  
+  // Selected meals for the week (JSON array of meal IDs)
+  selectedMeals   Json              @map("selected_meals")
+  
+  price           Float
+  paymentStatus   PaymentStatus     @default(PENDING) @map("payment_status")
+  
+  // Timestamps
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  
+  // Relations
+  user            User              @relation(fields: [userId], references: [id])
+  orders          Order[]
+  payments        Payment[]
+  
+  @@map("subscriptions")
+}
+
+model Meal {
+  id              String   @id @default(uuid())
+  
+  // Multi-language names and descriptions (stored as JSON)
+  name            Json     // { uz: string, ru: string, en: string }
+  description     Json     // { uz: string, ru: string, en: string }
+  
+  // Nutritional information
+  calories        Int
+  protein         Float    // grams
+  carbs           Float    // grams
+  fats            Float    // grams
+  fiber           Float?   // grams
+  
+  // Meal details
+  ingredients     Json     // array of ingredient objects { name, quantity, unit }
+  recipe          Json?    // recipe steps (optional)
+  prepTime        Int?     @map("prep_time") // minutes
+  cookTime        Int?     @map("cook_time") // minutes
+  
+  // Pricing
+  price           Float
+  cost            Float?   // internal cost
+  
+  // Categorization
+  category        String?  // e.g., breakfast, lunch, dinner
+  dietaryTags     Json     @map("dietary_tags") // array of tags: vegetarian, vegan, halal, gluten-free, etc.
+  cuisine         String?  // e.g., uzbek, european, asian
+  
+  // Images (Cloudinary URLs)
+  imageUrls       Json     @map("image_urls") // array of image URLs
+  
+  // Availability
+  isActive        Boolean  @default(true) @map("is_active")
+  
+  // Timestamps
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  orderItems      OrderItem[]
+  
+  @@map("meals")
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  userId          String      @map("user_id")
+  subscriptionId  String?     @map("subscription_id")
+  deliveryDate    DateTime    @map("delivery_date")
+  status          OrderStatus @default(PENDING)
+  
+  // Location and delivery
+  locationId      String      @map("location_id")
+  driverId        String?     @map("driver_id")
+  deliveryAddress String      @map("delivery_address")
+  deliveryNotes   String?     @map("delivery_notes")
+  
+  // Pricing
+  totalPrice      Float       @map("total_price")
+  
+  // Timestamps
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+  
+  // Relations
+  user            User        @relation(fields: [userId], references: [id])
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
+  location        Location    @relation(fields: [locationId], references: [id])
+  driver          Staff?      @relation(fields: [driverId], references: [id])
+  items           OrderItem[]
+  payments        Payment[]
+  
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String  @id @default(uuid())
+  orderId    String  @map("order_id")
+  mealId     String  @map("meal_id")
+  quantity   Int     @default(1)
+  portionSize String @default("regular") @map("portion_size") // regular, large, small
+  price      Float   // price at time of order
+  
+  // Relations
+  order      Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  meal       Meal    @relation(fields: [mealId], references: [id])
+  
+  @@map("order_items")
+}
+
+model Location {
+  id            String   @id @default(uuid())
+  name          String   // Multi-language name
+  address       String
+  city          String
+  district      String?
+  deliveryZones Json?    @map("delivery_zones") // JSON array of zone definitions
+  isActive      Boolean  @default(true) @map("is_active")
+  managerId     String?  @unique @map("manager_id")
+  
+  // Timestamps
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  manager       Staff?   @relation("LocationManager", fields: [managerId], references: [id])
+  users         User[]
+  orders        Order[]
+  staff         Staff[]
+  
+  @@map("locations")
+}
+
+model Staff {
+  id          String     @id @default(uuid())
+  email       String     @unique
+  phone       String     @unique
+  passwordHash String    @map("password_hash")
+  firstName   String     @map("first_name")
+  lastName    String     @map("last_name")
+  role        StaffRole
+  locationId  String?    @map("location_id")
+  isActive    Boolean    @default(true) @map("is_active")
+  
+  // Timestamps
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  
+  // Relations
+  location    Location?  @relation(fields: [locationId], references: [id])
+  managedLocation Location? @relation("LocationManager")
+  deliveries  Order[]
+  
+  @@map("staff")
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  userId          String        @map("user_id")
+  orderId         String?       @map("order_id")
+  subscriptionId  String?       @map("subscription_id")
+  amount          Float
+  currency        String        @default("UZS") // UZS or USD
+  status          PaymentStatus @default(PENDING)
+  paymentMethod   String        @map("payment_method") // click, payme, stripe, cash
+  transactionId   String?       @unique @map("transaction_id") // from payment gateway
+  gatewayResponse Json?         @map("gateway_response") // full response from gateway
+  
+  // Timestamps
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  
+  // Relations
+  user            User          @relation(fields: [userId], references: [id])
+  order           Order?        @relation(fields: [orderId], references: [id])
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
+  
+  @@map("payments")
+}
+

@@ -1,0 +1,61 @@
+{
+  "app": {
+    "title": "Ovqat Yetkazib Berish Platformasi",
+    "description": "Sog'liq uchun ovqat tayyorlash va yetkazib berish yechimi"
+  },
+  "welcome": "Ovqat Yetkazib Berish Platformasiga Xush Kelibsiz",
+  "home": {
+    "heroTitle": "Sog'liq uchun Ovqat Tayyorlash va Yetkazib Berish",
+    "heroSubtitle": "Shaxsiylashtirilgan ovqat rejalari va professional oshxona tayyorlovchisi bilan sog'lom hayotni boshlang",
+    "getStarted": "Boshlash",
+    "learnMore": "Batafsil",
+    "features": "Xususiyatlar",
+    "feature1Title": "Shaxsiylashtirilgan Ovqat Rejalari",
+    "feature1Desc": "Sizning maqsadingiz, faollik darajangiz va shaxsiy ehtiyojlaringizga moslashtirilgan ovqat rejalari",
+    "feature2Title": "Professional Oshxona",
+    "feature2Desc": "Tajribali oshpazlar tomonidan tayyorlangan yuqori sifatli, taze ingredientlardan tayyorlangan ovqatlar",
+    "feature3Title": "Istalgan Joyga Yetkazib Berish",
+    "feature3Desc": "Bizning yetkazib berish xizmatimiz orqali ovqatlaringizni uyingiz yoki ofisingizga qulay tarzda yetkazib beramiz",
+    "feature4Title": "Kaloriya va Makronutrientyatlar",
+    "feature4Desc": "Har bir ovqatda aniq kaloriya va makronutrientyatlar ma'lumotlari bilan o'z dietangizni kuzatib boring",
+    "howItWorks": "Qanday Ishlaydi",
+    "step1": "Ro'yxatdan o'ting va profil yarating",
+    "step2": "Maqsadingizni va ehtiyojlaringizni belgilang",
+    "step3": "Ovqatlarni tanlang va buyurtma bering",
+    "step4": "Ovqatlarni qabul qiling va mazza qiling"
+  },
+  "common": {
+    "loading": "Yuklanmoqda...",
+    "error": "Xatolik yuz berdi",
+    "success": "Muvaffaqiyatli",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "delete": "O'chirish",
+    "edit": "Tahrirlash",
+    "create": "Yaratish",
+    "search": "Qidirish",
+    "filter": "Filtr",
+    "close": "Yopish",
+    "optional": "Ixtiyoriy"
+  },
+  "auth": {
+    "login": "Kirish",
+    "register": "Ro'yxatdan o'tish",
+    "logout": "Chiqish",
+    "email": "Email",
+    "password": "Parol",
+    "phone": "Telefon raqami",
+    "verifyPhone": "Telefon raqamini tasdiqlash",
+    "firstName": "Ism",
+    "lastName": "Familiya",
+    "noAccount": "Hisobingiz yo'qmi?",
+    "haveAccount": "Allaqachon hisobingiz bormi?",
+    "verify": "Tasdiqlash",
+    "verifyPhone": "Telefon raqamini tasdiqlash",
+    "enterOTP": "Telefoningizga yuborilgan 6 xonali kodni kiriting",
+    "otpCode": "OTP Kodi",
+    "resendOTP": "OTP kodini qayta yuborish",
+    "resendIn": "{{seconds}} soniyada qayta yuborish"
+  }
+}
+

@@ -1,0 +1,61 @@
+{
+  "app": {
+    "title": "Food Delivery Platform",
+    "description": "Your healthy meal prep and delivery solution"
+  },
+  "welcome": "Welcome to Food Delivery Platform",
+  "home": {
+    "heroTitle": "Healthy Meal Prep and Delivery",
+    "heroSubtitle": "Start your healthy lifestyle with personalized meal plans and professional kitchen preparation",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "features": "Features",
+    "feature1Title": "Personalized Meal Plans",
+    "feature1Desc": "Customized meal plans based on your goals, activity level, and personal preferences",
+    "feature2Title": "Professional Kitchen",
+    "feature2Desc": "High-quality meals prepared by experienced chefs using fresh ingredients",
+    "feature3Title": "Convenient Delivery",
+    "feature3Desc": "Have your meals delivered to your home or office at your convenience",
+    "feature4Title": "Nutrition Tracking",
+    "feature4Desc": "Track your diet with precise calorie and macronutrient information for every meal",
+    "howItWorks": "How It Works",
+    "step1": "Sign up and create your profile",
+    "step2": "Set your goals and preferences",
+    "step3": "Select meals and place your order",
+    "step4": "Receive and enjoy your meals"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "close": "Close",
+    "optional": "Optional"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "phone": "Phone Number",
+    "verifyPhone": "Verify Phone Number",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "verify": "Verify",
+    "verifyPhone": "Verify Phone Number",
+    "enterOTP": "Enter the 6-digit code sent to your phone",
+    "otpCode": "OTP Code",
+    "resendOTP": "Resend OTP",
+    "resendIn": "Resend code in {{seconds}}s"
+  }
+}
+
