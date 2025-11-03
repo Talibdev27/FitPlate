@@ -34,7 +34,23 @@ app.get('/api', (req, res) => {
 
 // Import and use route handlers
 import authRoutes from './routes/auth';
+import userRoutes from './routes/user';
+import profileRoutes from './routes/profile';
+import subscriptionRoutes from './routes/subscription';
+import dashboardRoutes from './routes/dashboard';
+import staffRoutes from './routes/staff';
+import mealRoutes from './routes/meal';
+import orderRoutes from './routes/order';
+import locationRoutes from './routes/location';
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/admin/dashboard', dashboardRoutes);
+app.use('/api/staff', staffRoutes);
+app.use('/api/meals', mealRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/locations', locationRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

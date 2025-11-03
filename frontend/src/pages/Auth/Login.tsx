@@ -37,24 +37,29 @@ export const Login = () => {
       const response = await authApi.login(data);
 
       if (response.success && response.data) {
-        // Check if verification is required
-        if ('requiresVerification' in response.data && response.data.requiresVerification) {
-          navigate(`/verify-otp?userId=${response.data.userId}`);
-          return;
-        }
-
-        // Set auth state
-        if ('user' in response.data && 'tokens' in response.data) {
-          setAuth(
-            response.data.user,
-            response.data.tokens.accessToken,
-            response.data.tokens.refreshToken
-          );
-          navigate('/dashboard');
-        }
+        // Set auth state and navigate to dashboard
+        setAuth(
+          response.data.user,
+          response.data.tokens.accessToken,
+          response.data.tokens.refreshToken
+        );
+        navigate('/dashboard');
       }
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Login failed. Please try again.');
+      // Handle connection errors
+      if (!err.response) {
+        if (err.code === 'ERR_NETWORK' || err.message?.includes('Network Error') || err.message?.includes('Failed to fetch')) {
+          setError('Unable to connect to the server. Please check your internet connection and ensure the backend is running.');
+        } else {
+          setError('Network error occurred. Please try again.');
+        }
+      } else if (err.response?.data?.error?.message) {
+        setError(err.response.data.error.message);
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Login failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

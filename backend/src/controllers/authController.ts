@@ -2,7 +2,7 @@ import { Response } from 'express';
 import bcrypt from 'bcrypt';
 import prisma from '../utils/db';
 import { generateOTP, getOTPExpiry, isOTPExpired } from '../utils/otp';
-import { generateAccessToken, generateRefreshToken, TokenPayload } from '../utils/jwt';
+import { generateAccessToken, generateRefreshToken, TokenPayload, createUserTokenPayload, createStaffTokenPayload, StaffRole } from '../utils/jwt';
 import { smsService } from '../services/smsService';
 import { createError } from '../middleware/errorHandler';
 import { AuthRequest } from '../middleware/auth';
@@ -10,59 +10,85 @@ import { AuthRequest } from '../middleware/auth';
 export const register = async (req: AuthRequest, res: Response) => {
   const { email, password, phone, firstName, lastName } = req.body;
 
-  // Validation
-  if (!email || !password || !phone) {
-    throw createError('Email, password, and phone are required', 400);
+  // Validation - email and password are required, phone is optional
+  if (!email || !password) {
+    throw createError('Email and password are required', 400);
   }
 
-  // Check if user exists
-  const existingUser = await prisma.user.findFirst({
-    where: {
-      OR: [{ email }, { phone }],
-    },
+  // Check if user exists by email
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
   });
 
   if (existingUser) {
-    throw createError('User with this email or phone already exists', 409);
+    throw createError('User with this email already exists', 409);
+  }
+
+  // If phone is provided, check if it's already taken
+  const trimmedPhone = phone?.trim();
+  if (trimmedPhone) {
+    const existingPhoneUser = await prisma.user.findUnique({
+      where: { phone: trimmedPhone },
+    });
+    if (existingPhoneUser) {
+      throw createError('User with this phone number already exists', 409);
+    }
   }
 
   // Hash password
   const passwordHash = await bcrypt.hash(password, 10);
 
-  // Create user
+  // Create user with phone verified by default (no OTP required for now)
+  const userData: {
+    email: string;
+    passwordHash: string;
+    isPhoneVerified: boolean;
+    phone?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+  } = {
+    email,
+    passwordHash,
+    isPhoneVerified: true, // Auto-verify for email/password auth
+  };
+
+  // Only add optional fields if they have values
+  if (trimmedPhone) {
+    userData.phone = trimmedPhone;
+  }
+  if (firstName) {
+    userData.firstName = firstName;
+  }
+  if (lastName) {
+    userData.lastName = lastName;
+  }
+
   const user = await prisma.user.create({
-    data: {
-      email,
-      phone,
-      passwordHash,
-      firstName,
-      lastName,
-      isPhoneVerified: false,
-    },
+    data: userData,
   });
 
-  // Generate OTP
-  const otpCode = generateOTP();
-  const expiresAt = getOTPExpiry(10); // 10 minutes
+  // Generate tokens immediately
+  const payload = createUserTokenPayload(user.id, user.email);
 
-  await prisma.otpVerification.create({
-    data: {
-      userId: user.id,
-      phone: user.phone,
-      code: otpCode,
-      expiresAt,
-    },
-  });
-
-  // Send OTP via SMS
-  await smsService.sendOTP(phone, otpCode);
+  const accessToken = generateAccessToken(payload);
+  const refreshToken = generateRefreshToken(payload);
 
   res.status(201).json({
     success: true,
-    message: 'Registration successful. Please verify your phone number.',
+    message: 'Registration successful',
     data: {
-      userId: user.id,
-      requiresVerification: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        phone: user.phone,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isPhoneVerified: user.isPhoneVerified,
+      },
+      tokens: {
+        accessToken,
+        refreshToken,
+      },
     },
   });
 };
@@ -75,7 +101,7 @@ export const verifyOTP = async (req: AuthRequest, res: Response) => {
   }
 
   // Find OTP record
-  const otpRecord = await prisma.otpVerification.findFirst({
+  const otpRecord = await prisma.oTPVerification.findFirst({
     where: {
       userId,
       code,
@@ -95,7 +121,7 @@ export const verifyOTP = async (req: AuthRequest, res: Response) => {
   }
 
   // Mark OTP as verified
-  await prisma.otpVerification.update({
+  await prisma.oTPVerification.update({
     where: { id: otpRecord.id },
     data: { verified: true },
   });
@@ -107,10 +133,7 @@ export const verifyOTP = async (req: AuthRequest, res: Response) => {
   });
 
   // Generate tokens
-  const payload: TokenPayload = {
-    userId: user.id,
-    email: user.email,
-  };
+  const payload = createUserTokenPayload(user.id, user.email);
 
   const accessToken = generateAccessToken(payload);
   const refreshToken = generateRefreshToken(payload);
@@ -152,11 +175,15 @@ export const resendOTP = async (req: AuthRequest, res: Response) => {
     throw createError('Phone already verified', 400);
   }
 
+  if (!user.phone) {
+    throw createError('User does not have a phone number', 400);
+  }
+
   // Generate new OTP
   const otpCode = generateOTP();
   const expiresAt = getOTPExpiry(10);
 
-  await prisma.otpVerification.create({
+  await prisma.oTPVerification.create({
     data: {
       userId: user.id,
       phone: user.phone,
@@ -197,24 +224,8 @@ export const login = async (req: AuthRequest, res: Response) => {
     throw createError('Invalid email or password', 401);
   }
 
-  // Check if phone is verified
-  if (!user.isPhoneVerified) {
-    // Allow login but require verification
-    return res.json({
-      success: true,
-      message: 'Phone verification required',
-      data: {
-        userId: user.id,
-        requiresVerification: true,
-      },
-    });
-  }
-
-  // Generate tokens
-  const payload: TokenPayload = {
-    userId: user.id,
-    email: user.email,
-  };
+  // Generate tokens immediately (no phone verification required)
+  const payload = createUserTokenPayload(user.id, user.email);
 
   const accessToken = generateAccessToken(payload);
   const refreshToken = generateRefreshToken(payload);
@@ -229,6 +240,61 @@ export const login = async (req: AuthRequest, res: Response) => {
         firstName: user.firstName,
         lastName: user.lastName,
         isPhoneVerified: user.isPhoneVerified,
+      },
+      tokens: {
+        accessToken,
+        refreshToken,
+      },
+    },
+  });
+};
+
+export const staffLogin = async (req: AuthRequest, res: Response) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw createError('Email and password are required', 400);
+  }
+
+  // Find staff member
+  const staff = await prisma.staff.findUnique({
+    where: { email },
+  });
+
+  if (!staff) {
+    throw createError('Invalid email or password', 401);
+  }
+
+  // Check if staff is active
+  if (!staff.isActive) {
+    throw createError('Your account has been deactivated. Please contact an administrator.', 403);
+  }
+
+  // Verify password
+  const isPasswordValid = await bcrypt.compare(password, staff.passwordHash);
+
+  if (!isPasswordValid) {
+    throw createError('Invalid email or password', 401);
+  }
+
+  // Generate tokens with role information
+  const payload = createStaffTokenPayload(staff.id, staff.email, staff.role as StaffRole);
+
+  const accessToken = generateAccessToken(payload);
+  const refreshToken = generateRefreshToken(payload);
+
+  res.json({
+    success: true,
+    data: {
+      staff: {
+        id: staff.id,
+        email: staff.email,
+        phone: staff.phone,
+        firstName: staff.firstName,
+        lastName: staff.lastName,
+        role: staff.role,
+        locationId: staff.locationId,
+        isActive: staff.isActive,
       },
       tokens: {
         accessToken,

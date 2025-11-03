@@ -1,28 +1,39 @@
 {
   "app": {
-    "title": "Ovqat Yetkazib Berish Platformasi",
+    "title": "FitPlate",
     "description": "Sog'liq uchun ovqat tayyorlash va yetkazib berish yechimi"
   },
-  "welcome": "Ovqat Yetkazib Berish Platformasiga Xush Kelibsiz",
+  "welcome": "FitPlate'ga Xush Kelibsiz",
   "home": {
-    "heroTitle": "Sog'liq uchun Ovqat Tayyorlash va Yetkazib Berish",
-    "heroSubtitle": "Shaxsiylashtirilgan ovqat rejalari va professional oshxona tayyorlovchisi bilan sog'lom hayotni boshlang",
-    "getStarted": "Boshlash",
+    "heroTitle": "FitPlate bilan Sog'liqni O'zgartiring 🥗💪",
+    "heroSubtitle": "Shaxsiylashtirilgan ovqat rejalari, professional oshxona tayyorlovchisi va qulay yetkazib berish xizmati bilan sog'lom hayotni boshlang",
+    "getStarted": "✨ Safaringizni Boshlang ✨",
+    "joinToday": "Bugun FitPlate'ga Qo'shiling! 🚀",
     "learnMore": "Batafsil",
-    "features": "Xususiyatlar",
-    "feature1Title": "Shaxsiylashtirilgan Ovqat Rejalari",
-    "feature1Desc": "Sizning maqsadingiz, faollik darajangiz va shaxsiy ehtiyojlaringizga moslashtirilgan ovqat rejalari",
-    "feature2Title": "Professional Oshxona",
-    "feature2Desc": "Tajribali oshpazlar tomonidan tayyorlangan yuqori sifatli, taze ingredientlardan tayyorlangan ovqatlar",
-    "feature3Title": "Istalgan Joyga Yetkazib Berish",
-    "feature3Desc": "Bizning yetkazib berish xizmatimiz orqali ovqatlaringizni uyingiz yoki ofisingizga qulay tarzda yetkazib beramiz",
-    "feature4Title": "Kaloriya va Makronutrientyatlar",
-    "feature4Desc": "Har bir ovqatda aniq kaloriya va makronutrientyatlar ma'lumotlari bilan o'z dietangizni kuzatib boring",
-    "howItWorks": "Qanday Ishlaydi",
-    "step1": "Ro'yxatdan o'ting va profil yarating",
-    "step2": "Maqsadingizni va ehtiyojlaringizni belgilang",
-    "step3": "Ovqatlarni tanlang va buyurtma bering",
-    "step4": "Ovqatlarni qabul qiling va mazza qiling"
+    "ctaMain": "Bepul Boshlash →",
+    "statsTitle": "Minglab Baxtli Mijozlarga Qo'shiling",
+    "statsCustomers": "10,000+",
+    "statsMeals": "500,000+",
+    "statsRating": "4.9★",
+    "features": "Nima Uchun FitPlate?",
+    "feature1Title": "📋 Shaxsiylashtirilgan Ovqat Rejalari",
+    "feature1Desc": "Sizning fitness maqsadlaringiz, faollik darajangiz va dietetik afzalliklaringizga moslashtirilgan ovqat rejalari",
+    "feature2Title": "👨‍🍳 Professional Oshxona",
+    "feature2Desc": "Tajribali oshpazlar tomonidan eng yangi, yuqori sifatli ingredientlardan tayyorlangan gastronomik ovqatlar",
+    "feature3Title": "🚚 Qulay Yetkazib Berish",
+    "feature3Desc": "Uyingiz yoki ofisingizga istalgan vaqtda yangi ovqatlar yetkazib beriladi. Oshpazlik kerak emas!",
+    "feature4Title": "📊 Nutrition Kuzatish",
+    "feature4Desc": "Har bir kaloriya va makronutrientyatni batafsil nutrition ma'lumotlari bilan kuzatib boring",
+    "howItWorks": "FitPlate Qanday Ishlaydi",
+    "step1": "1️⃣ Ro'yxatdan o'ting va profil yarating",
+    "step2": "2️⃣ Maqsadlaringizni va afzalliklaringizni belgilang",
+    "step3": "3️⃣ Ovqatlarni tanlang va buyurtma bering",
+    "step4": "4️⃣ Yangi ovqatlarni qabul qiling va mazza qiling! 🎉",
+    "testimonialTitle": "Mijozlarimiz Nima Deydi",
+    "testimonial1": "\"FitPlate hayotimni o'zgartirdi! Har kuni mazali ovqatlar yeb, 3 oyda 15kg yutdim.\"",
+    "testimonial1Author": "Sarah M., Fitness Qiziqchisi",
+    "testimonial2": "\"Qulaylik va sifat tengsiz. Sog'liqim uchun qilgan eng yaxshi qaror!\"",
+    "testimonial2Author": "John D., Band Professional"
   },
   "common": {
     "loading": "Yuklanmoqda...",
@@ -56,6 +67,89 @@
     "otpCode": "OTP Kodi",
     "resendOTP": "OTP kodini qayta yuborish",
     "resendIn": "{{seconds}} soniyada qayta yuborish"
+  },
+  "onboarding": {
+    "step1": {
+      "label": "Reja Tanlash",
+      "title": "Rejangizni Tanlang",
+      "subtitle": "Hayot tarzingizga mos obuna rejasini tanlang"
+    },
+    "step2": {
+      "label": "Shaxsiy Ma'lumotlar",
+      "title": "O'zingiz Haqida Aytib Bering",
+      "subtitle": "Sizga shaxsiylashtirilgan ovqat rejasi yaratishga yordam bering"
+    },
+    "step3": {
+      "label": "Ovqat Tanlash",
+      "title": "Ovqatlarni Tanlang",
+      "subtitle": "Haftalik menyudan sevimli ovqatlaringizni tanlang"
+    },
+    "step4": {
+      "label": "Yetkazib Berish Manzili",
+      "title": "Yetkazib Berish Ma'lumotlari",
+      "subtitle": "Ovqatlarni qayerga yetkazib beramiz?"
+    },
+    "step5": {
+      "label": "To'lov",
+      "title": "Buyurtmangizni Yakunlang",
+      "subtitle": "Obunangizni ko'rib chiqing va tasdiqlang"
+    },
+    "progress": "Qadam {{current}} / {{total}}",
+    "next": "Keyingi",
+    "back": "Orqaga",
+    "continue": "Davom etish",
+    "finish": "Buyurtmani Yakunlash",
+    "plan": {
+      "popular": "Eng Mashhur",
+      "mealsPerWeek": "ta ovqat/hafta",
+      "select": "Rejani Tanlash",
+      "selected": "Tanlangan"
+    },
+    "meals": {
+      "search": "Ovqatlarni qidirish...",
+      "selected": "{{count}} ta ovqat tanlangan",
+      "selectAtLeastOne": "Iltimos, kamida bitta ovqat tanlang",
+      "noMealsFound": "Ovqat topilmadi"
+    },
+    "address": {
+      "city": "Shahar/Tuman",
+      "selectLocation": "Joylashuvni tanlang",
+      "fullAddress": "To'liq Manzil",
+      "addressPlaceholder": "Ko'cha, bino, kvartira raqami...",
+      "deliveryTime": "Yetkazib Berish Vaqti",
+      "deliveryDays": "Yetkazib Berish Kunlari",
+      "deliveryNotes": "Yetkazib Berish Ko'rsatmalari",
+      "notesPlaceholder": "Yetkazib berish uchun maxsus ko'rsatmalar..."
+    },
+    "payment": {
+      "orderSummary": "Buyurtma Xulosa",
+      "mealsPerWeek": "ta ovqat/hafta",
+      "selectedMeals": "Tanlangan Ovqatlar",
+      "meals": "ta ovqat",
+      "delivery": "Yetkazib Berish",
+      "subtotal": "Jami",
+      "deliveryFee": "Yetkazib Berish To'lovi",
+      "total": "Umumiy",
+      "paymentMethod": "To'lov Usuli",
+      "clickDescription": "Click orqali xavfsiz to'lang",
+      "complete": "Buyurtmani Yakunlash",
+      "acceptTerms": "Iltimos, shartlar va qoidalarni qabul qiling",
+      "acceptTermsText": "Men shartlar va qoidalarni qabul qilaman",
+      "processing": "Jarayonda..."
+    },
+    "success": {
+      "title": "🎉 FitPlate'ga Xush Kelibsiz!",
+      "subtitle": "Obunangiz muvaffaqiyatli faollashtirildi!",
+      "subscriptionDetails": "Obuna Ma'lumotlari",
+      "plan": "Reja",
+      "planDaily": "Kunlik",
+      "planWeekly": "Haftalik",
+      "planMonthly": "Oylik",
+      "firstDelivery": "Birinchi Yetkazib Berish",
+      "total": "To'langan Jami",
+      "info": "Tez orada elektron pochta orqali tasdiqlash xabari yuboriladi. Biz ovqatlarni tayyorlashni boshlaymiz va ularni jadvalingizga muvofiq yetkazamiz!",
+      "goToDashboard": "Dashboard'ga O'tish"
+    }
   }
 }
 

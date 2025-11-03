@@ -17,7 +17,7 @@ class EmailService {
     if (emailApiKey && emailFrom) {
       // Configure email service (SendGrid, SMTP, etc.)
       // This is a placeholder - configure based on your email provider
-      this.transporter = nodemailer.createTransporter({
+      this.transporter = nodemailer.createTransport({
         // Configure based on your email provider
         // For SendGrid, use SMTP settings
         // For other providers, adjust accordingly

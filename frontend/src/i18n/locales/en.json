@@ -1,28 +1,39 @@
 {
   "app": {
-    "title": "Food Delivery Platform",
+    "title": "FitPlate",
     "description": "Your healthy meal prep and delivery solution"
   },
-  "welcome": "Welcome to Food Delivery Platform",
+  "welcome": "Welcome to FitPlate",
   "home": {
-    "heroTitle": "Healthy Meal Prep and Delivery",
-    "heroSubtitle": "Start your healthy lifestyle with personalized meal plans and professional kitchen preparation",
-    "getStarted": "Get Started",
+    "heroTitle": "Transform Your Health with FitPlate 🥗💪",
+    "heroSubtitle": "Start your healthy lifestyle journey with personalized meal plans, professional kitchen preparation, and convenient delivery right to your door",
+    "getStarted": "✨ Start Your Journey ✨",
+    "joinToday": "Join FitPlate Today! 🚀",
     "learnMore": "Learn More",
-    "features": "Features",
-    "feature1Title": "Personalized Meal Plans",
-    "feature1Desc": "Customized meal plans based on your goals, activity level, and personal preferences",
-    "feature2Title": "Professional Kitchen",
-    "feature2Desc": "High-quality meals prepared by experienced chefs using fresh ingredients",
-    "feature3Title": "Convenient Delivery",
-    "feature3Desc": "Have your meals delivered to your home or office at your convenience",
-    "feature4Title": "Nutrition Tracking",
-    "feature4Desc": "Track your diet with precise calorie and macronutrient information for every meal",
-    "howItWorks": "How It Works",
-    "step1": "Sign up and create your profile",
-    "step2": "Set your goals and preferences",
-    "step3": "Select meals and place your order",
-    "step4": "Receive and enjoy your meals"
+    "ctaMain": "Get Started Free →",
+    "statsTitle": "Join Thousands of Happy Customers",
+    "statsCustomers": "10,000+",
+    "statsMeals": "500,000+",
+    "statsRating": "4.9★",
+    "features": "Why Choose FitPlate?",
+    "feature1Title": "📋 Personalized Meal Plans",
+    "feature1Desc": "Customized meal plans tailored to your fitness goals, activity level, and dietary preferences",
+    "feature2Title": "👨‍🍳 Professional Kitchen",
+    "feature2Desc": "Gourmet meals prepared by expert chefs using the freshest, highest-quality ingredients",
+    "feature3Title": "🚚 Convenient Delivery",
+    "feature3Desc": "Fresh meals delivered to your home or office whenever you need them. No cooking required!",
+    "feature4Title": "📊 Nutrition Tracking",
+    "feature4Desc": "Track every calorie and macronutrient with detailed nutrition info for complete diet control",
+    "howItWorks": "How FitPlate Works",
+    "step1": "1️⃣ Sign up and create your profile",
+    "step2": "2️⃣ Set your goals and preferences",
+    "step3": "3️⃣ Select meals and place your order",
+    "step4": "4️⃣ Receive fresh meals and enjoy! 🎉",
+    "testimonialTitle": "What Our Customers Say",
+    "testimonial1": "\"FitPlate changed my life! I lost 15kg in 3 months while eating delicious meals every day.\"",
+    "testimonial1Author": "Sarah M., Fitness Enthusiast",
+    "testimonial2": "\"The convenience and quality are unmatched. Best decision I made for my health!\"",
+    "testimonial2Author": "John D., Busy Professional"
   },
   "common": {
     "loading": "Loading...",
@@ -56,6 +67,153 @@
     "otpCode": "OTP Code",
     "resendOTP": "Resend OTP",
     "resendIn": "Resend code in {{seconds}}s"
+  },
+  "onboarding": {
+    "step1": {
+      "label": "Plan Selection",
+      "title": "Choose Your Plan",
+      "subtitle": "Select the subscription plan that fits your lifestyle"
+    },
+    "step2": {
+      "label": "Personal Details",
+      "title": "Tell Us About Yourself",
+      "subtitle": "Help us create a personalized meal plan for you"
+    },
+    "step3": {
+      "label": "Meal Selection",
+      "title": "Select Your Meals",
+      "subtitle": "Choose your favorite meals from our weekly menu"
+    },
+    "step4": {
+      "label": "Delivery Address",
+      "title": "Delivery Information",
+      "subtitle": "Where should we deliver your meals?"
+    },
+    "step5": {
+      "label": "Payment",
+      "title": "Complete Your Order",
+      "subtitle": "Review and confirm your subscription"
+    },
+    "progress": "Step {{current}} of {{total}}",
+    "next": "Next",
+    "back": "Back",
+    "continue": "Continue",
+    "finish": "Complete Order",
+    "plan": {
+      "popular": "Most Popular",
+      "mealsPerWeek": "meals/week",
+      "select": "Select Plan",
+      "selected": "Selected"
+    },
+    "meals": {
+      "search": "Search meals...",
+      "selected": "{{count}} meals selected",
+      "selectAtLeastOne": "Please select at least one meal",
+      "noMealsFound": "No meals found"
+    },
+    "address": {
+      "city": "City/District",
+      "selectLocation": "Select location",
+      "fullAddress": "Full Address",
+      "addressPlaceholder": "Street, building, apartment number...",
+      "deliveryTime": "Preferred Delivery Time",
+      "deliveryDays": "Delivery Days",
+      "deliveryNotes": "Delivery Instructions",
+      "notesPlaceholder": "Any special instructions for delivery..."
+    },
+    "payment": {
+      "orderSummary": "Order Summary",
+      "mealsPerWeek": "meals/week",
+      "selectedMeals": "Selected Meals",
+      "meals": "meals",
+      "delivery": "Delivery",
+      "subtotal": "Subtotal",
+      "deliveryFee": "Delivery Fee",
+      "total": "Total",
+      "paymentMethod": "Payment Method",
+      "clickDescription": "Pay securely with Click",
+      "complete": "Complete Order",
+      "acceptTerms": "Please accept the terms and conditions",
+      "acceptTermsText": "I accept the terms and conditions",
+      "processing": "Processing..."
+    },
+    "success": {
+      "title": "🎉 Welcome to FitPlate!",
+      "subtitle": "Your subscription has been activated successfully!",
+      "subscriptionDetails": "Subscription Details",
+      "plan": "Plan",
+      "planDaily": "Daily",
+      "planWeekly": "Weekly",
+      "planMonthly": "Monthly",
+      "firstDelivery": "First Delivery",
+      "total": "Total Paid",
+      "info": "You will receive an email confirmation shortly. We'll start preparing your meals and deliver them according to your schedule!",
+      "goToDashboard": "Go to Dashboard"
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "overview": "Here's an overview of your subscription and upcoming deliveries",
+    "subscription": {
+      "title": "My Subscription",
+      "plan": "Plan",
+      "status": "Status",
+      "price": "Price",
+      "manage": "Manage Subscription"
+    },
+    "delivery": {
+      "next": "Next Delivery",
+      "viewSchedule": "View Schedule",
+      "arrived": "Delivery arrived!"
+    },
+    "quickActions": "Quick Actions",
+    "actions": {
+      "selectMeals": "Select Meals",
+      "viewOrders": "View Orders",
+      "trackProgress": "Track Progress"
+    },
+    "recentOrders": "Upcoming Deliveries",
+    "viewAll": "View All",
+    "orders": {
+      "date": "Date",
+      "status": "Status",
+      "total": "Total"
+    },
+    "noSubscription": "No Active Subscription",
+    "subscribeNow": "Start your healthy meal journey today!",
+    "startSubscription": "Start Subscription",
+    "comingSoon": "Coming Soon",
+    "featureDevelopment": "We're working on this feature and will release it soon.",
+    "dashboard": "Dashboard",
+    "subscription": "Subscription",
+    "meals": "Meals",
+    "deliveries": "Deliveries",
+    "orders": "Orders",
+    "progress": "Progress",
+    "profile": "Profile",
+    "payments": "Payments",
+    "subscriptionManagement": {
+      "title": "Subscription Management",
+      "description": "Manage your subscription, pause, resume, or cancel anytime",
+      "details": "Subscription Details",
+      "mealsPerDay": "Meals Per Day",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "paymentStatus": "Payment Status",
+      "selectedMeals": "Selected Meals",
+      "actions": "Actions",
+      "pause": "Pause Subscription",
+      "resume": "Resume Subscription",
+      "cancel": "Cancel Subscription",
+      "changePlan": "Change Plan",
+      "confirmPause": "Are you sure you want to pause your subscription?",
+      "confirmCancel": "Are you sure you want to cancel your subscription? This action cannot be undone.",
+      "paused": "Subscription paused successfully",
+      "resumed": "Subscription resumed successfully",
+      "cancelled": "Subscription cancelled successfully",
+      "noSubscription": "No Active Subscription",
+      "subscribeNow": "Start your healthy meal journey today!"
+    }
   }
 }
 

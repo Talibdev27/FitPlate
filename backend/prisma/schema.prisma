@@ -1,7 +1,8 @@
 // This is your Prisma schema file
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
 datasource db {
@@ -65,9 +66,9 @@ enum StaffRole {
 model User {
   id                String   @id @default(uuid())
   email             String   @unique
-  phone             String   @unique
+  phone             String?  @unique
   passwordHash      String   @map("password_hash")
-  isPhoneVerified   Boolean  @default(false) @map("is_phone_verified")
+  isPhoneVerified   Boolean  @default(true) @map("is_phone_verified") // Auto-verified for email/password auth
   firstName         String?  @map("first_name")
   lastName          String?  @map("last_name")
   

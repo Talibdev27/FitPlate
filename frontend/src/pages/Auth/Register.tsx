@@ -5,11 +5,12 @@ import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '../../api/auth';
+import { useAuthStore } from '../../store/authStore';
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  phone: z.string().min(9, 'Invalid phone number'),
+  phone: z.string().optional(),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
 });
@@ -19,6 +20,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export const Register = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { setAuth } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -38,10 +40,29 @@ export const Register = () => {
       const response = await authApi.register(data);
 
       if (response.success && response.data) {
-        navigate(`/verify-otp?userId=${response.data.userId}`);
+        // Set auth state and navigate to onboarding
+        setAuth(
+          response.data.user,
+          response.data.tokens.accessToken,
+          response.data.tokens.refreshToken
+        );
+        navigate('/onboarding/plan');
       }
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Registration failed. Please try again.');
+      // Handle connection errors
+      if (!err.response) {
+        if (err.code === 'ERR_NETWORK' || err.message?.includes('Network Error') || err.message?.includes('Failed to fetch')) {
+          setError('Unable to connect to the server. Please check your internet connection and ensure the backend is running.');
+        } else {
+          setError('Network error occurred. Please try again.');
+        }
+      } else if (err.response?.data?.error?.message) {
+        setError(err.response.data.error.message);
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Registration failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -101,7 +122,7 @@ export const Register = () => {
 
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                {t('auth.phone', 'Phone Number')}
+                {t('auth.phone', 'Phone Number')} ({t('common.optional', 'Optional')})
               </label>
               <input
                 {...register('phone')}

@@ -4,7 +4,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 interface User {
   id: string;
   email: string;
-  phone: string;
+  phone?: string;
   firstName?: string;
   lastName?: string;
   isPhoneVerified: boolean;

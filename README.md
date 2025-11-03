@@ -1,6 +1,6 @@
-# Food Delivery Platform MVP
+# FitPlate 🥗
 
-A complete meal prep and delivery management system for a health-focused food business in Uzbekistan.
+A complete meal prep and delivery management system for a health-focused food business. Transform your health with personalized meal plans, professional kitchen preparation, and convenient delivery.
 
 ## Tech Stack
 
@@ -37,7 +37,7 @@ A complete meal prep and delivery management system for a health-focused food bu
 3. Run `docker-compose up` to start all services
 4. Access the application:
    - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000
+   - Backend API: http://localhost:5001
 
 ### Development
 
@@ -56,13 +56,23 @@ npx prisma generate
 ## Project Structure
 
 ```
-/food-delivery-platform
-├── /frontend              # React app
-├── /backend               # Express API
+/fitplate
+├── /frontend              # React app with Tailwind CSS
+├── /backend               # Express API with TypeScript
 ├── /database              # Database scripts
 ├── docker-compose.yml     # Docker services
 └── README.md
 ```
+
+## Features
+
+✨ **Beautiful, animated UI** with modern design  
+🥗 **Personalized meal plans** tailored to your goals  
+👨‍🍳 **Professional kitchen** preparation  
+🚚 **Convenient delivery** service  
+📊 **Nutrition tracking** with detailed macros  
+🌍 **Multi-language support** (Uzbek, Russian, English)  
+💪 **Fitness-focused** approach to healthy eating
 
 ## Environment Variables
 
