@@ -15,7 +15,7 @@ export const Meals = () => {
   
   // Pagination
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(20);
+  const [limit] = useState(20);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   
@@ -361,8 +361,7 @@ interface MealModalProps {
 }
 
 const MealModal = ({ meal, isAddMode, onClose }: MealModalProps) => {
-  const { t, i18n } = useTranslation();
-  const currentLanguage = i18n.language as 'uz' | 'ru' | 'en';
+  const { t } = useTranslation();
   
   const [formData, setFormData] = useState<CreateMealData>({
     name: {

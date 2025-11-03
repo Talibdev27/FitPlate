@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { OnboardingStepper } from '../../components/OnboardingStepper';
-import { useAuthStore } from '../../store/authStore';
 
 interface OrderSummary {
   plan: {
@@ -26,7 +25,6 @@ interface OrderSummary {
 export const Payment = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [orderSummary, setOrderSummary] = useState<OrderSummary | null>(null);

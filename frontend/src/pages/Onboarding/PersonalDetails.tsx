@@ -79,7 +79,7 @@ export const PersonalDetails = () => {
 
   // Calculate nutrition goals when form fields change
   useEffect(() => {
-    const [age, gender, weight, height, targetWeight, goal, activityLevel] = watchedFields;
+    const [age, gender, weight, height, , goal, activityLevel] = watchedFields; // targetWeight not used in calculation
     
     if (age && gender && weight && height && goal && activityLevel) {
       // BMR calculation (Mifflin-St Jeor Equation)

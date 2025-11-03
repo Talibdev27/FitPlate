@@ -79,7 +79,7 @@ export const PlanSelection = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false); // Reserved for future async operations
 
   const currentLanguage = i18n.language as 'uz' | 'ru' | 'en';
 

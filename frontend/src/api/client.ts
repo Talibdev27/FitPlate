@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 export const apiClient = axios.create({
   baseURL: API_URL,
@@ -18,7 +18,7 @@ apiClient.interceptors.request.use(
     const token = staffToken || userToken;
     
     // Debug logging (only in development)
-    if (import.meta.env.DEV && config.url?.includes('/users')) {
+    if (import.meta.env.MODE === 'development' && config.url?.includes('/users')) {
       console.log('[API Debug] Request to:', config.url);
       console.log('[API Debug] Has staff token:', !!staffToken);
       console.log('[API Debug] Has user token:', !!userToken);
@@ -29,7 +29,7 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     } else {
       // Log warning if no token for API calls (except auth endpoints)
-      if (!config.url?.includes('/auth') && import.meta.env.DEV) {
+      if (!config.url?.includes('/auth') && import.meta.env.MODE === 'development') {
         console.warn('[API Warning] No token found for request to:', config.url);
       }
     }
@@ -45,7 +45,7 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     // Debug logging for 401 errors
-    if (error.response?.status === 401 && import.meta.env.DEV) {
+    if (error.response?.status === 401 && import.meta.env.MODE === 'development') {
       console.error('[API Error] 401 Unauthorized');
       console.error('[API Error] URL:', error.config?.url);
       console.error('[API Error] Error message:', error.response?.data?.error?.message);

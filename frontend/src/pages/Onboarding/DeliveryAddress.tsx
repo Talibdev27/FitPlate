@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { OnboardingStepper } from '../../components/OnboardingStepper';
-import { apiClient } from '../../api/client';
 
 const deliveryAddressSchema = z.object({
   locationId: z.string().min(1, 'Location is required'),

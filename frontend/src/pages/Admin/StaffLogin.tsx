@@ -45,7 +45,7 @@ export const StaffLogin = () => {
         );
         
         // Verify token was stored (development only)
-        if (import.meta.env.DEV) {
+        if (import.meta.env.MODE === 'development') {
           const storedToken = localStorage.getItem('staffAccessToken');
           console.log('[Login Debug] Token stored:', !!storedToken);
           console.log('[Login Debug] Token preview:', storedToken ? `${storedToken.substring(0, 30)}...` : 'none');

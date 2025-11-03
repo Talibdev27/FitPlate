@@ -37,12 +37,10 @@ interface RecentOrder {
 }
 
 export const Dashboard = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const currentLanguage = i18n.language as 'uz' | 'ru' | 'en';
 
   useEffect(() => {
     fetchDashboardData();
@@ -238,10 +236,6 @@ export const Dashboard = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {recentOrders.map((order) => {
-                  const mealName = typeof order.items[0]?.meal?.name === 'object'
-                    ? order.items[0].meal.name[currentLanguage] || order.items[0].meal.name.en || 'Meal'
-                    : order.items[0]?.meal?.name || 'Meal';
-
                   return (
                     <tr key={order.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3 text-sm text-gray-900 font-mono">

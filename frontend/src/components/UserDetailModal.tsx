@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { User, usersApi, UpdateUserData } from '../api/users';
-import { useStaffAuthStore } from '../store/staffAuthStore';
 
 interface UserDetailModalProps {
   user: User;
@@ -9,7 +8,6 @@ interface UserDetailModalProps {
 }
 
 export const UserDetailModal = ({ user, onClose }: UserDetailModalProps) => {
-  const { staff } = useStaffAuthStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userDetails, setUserDetails] = useState<User | null>(null);

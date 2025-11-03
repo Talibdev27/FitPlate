@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { OnboardingStepper } from '../../components/OnboardingStepper';
-import { apiClient } from '../../api/client';
 
 interface Meal {
   id: string;

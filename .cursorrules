@@ -1,0 +1,113 @@
+# FitPlate Project Intelligence
+
+## Critical Implementation Paths
+
+### Authentication Flow
+- User registration: Email/password → JWT tokens → Store in localStorage
+- Staff login: Email/password → JWT with role → Store in staffAuthStore
+- Token refresh: Automatic via interceptors, handles expired tokens gracefully
+- Route protection: Use `ProtectedRoute` for users, `AdminRoute` for staff, `RoleRoute` for role-specific
+
+### Database Access Pattern
+- Always use Prisma Client from `utils/db.ts`
+- Never mix `include` and `select` in Prisma queries (use one or the other)
+- Location model does NOT have: coordinates, phone, email fields
+- Staff model relationships: location (many-to-one), managedLocation (one-to-one)
+
+### API Client Pattern
+- Use `apiClient` from `api/client.ts` for all requests
+- Interceptors handle token management automatically
+- Staff routes require `staffAccessToken` in localStorage
+- User routes require `accessToken` in localStorage
+
+### Multi-Language Support
+- All user-facing text should use `useTranslation()` hook
+- Translation keys follow pattern: `feature.section.key`
+- Languages: uz (Uzbek), ru (Russian), en (English)
+- Translation files: `frontend/src/i18n/locales/{lang}.json`
+
+### Form Handling Pattern
+- Use React Hook Form + Zod for validation
+- Schema in component file, then use `zodResolver`
+- Error display: Show errors below input fields
+- Submit: Disable button during loading, show loading state
+
+## Project-Specific Patterns
+
+### Component Naming
+- Avoid naming conflicts: If importing a type named `Staff`, alias it as `StaffMember` if component is also named `Staff`
+- Admin components: Prefixed with `Admin` (e.g., `AdminLayout`, `AdminRoute`)
+- User components: Prefixed with `User` when needed (e.g., `UserLayout`)
+
+### State Management
+- Authentication: Use Zustand stores (`authStore`, `staffAuthStore`)
+- API data: Fetch in component, store in local state
+- Session storage: Used for onboarding flow data persistence
+
+### Error Handling
+- Backend: Use `createError` utility from `errorHandler.ts`
+- Frontend: Try-catch in async functions, display user-friendly messages
+- Network errors: Show connection error message, don't auto-redirect
+- 401 errors: Only redirect if truly no token (not just expired)
+
+### Role-Based Access
+- SUPER_ADMIN: Can do everything
+- LOCATION_MANAGER: Can manage locations and staff
+- CHEF, NUTRITIONIST: Can manage meals
+- CUSTOMER_SUPPORT: Can manage users
+- DELIVERY_DRIVER: Can view and update orders
+
+## Known Challenges
+
+### TypeScript with Prisma
+- Prisma queries are type-safe but can conflict with TypeScript strict mode
+- Solution: Use type assertions carefully, avoid `any` where possible
+- Common issue: `include` vs `select` conflict - choose one approach
+
+### Docker Development
+- Backend runs on port 5001 (not 5000)
+- Frontend API URL: `http://localhost:5001/api`
+- Hot reload: Works automatically with nodemon (backend) and Vite (frontend)
+- Environment variables: Set in docker-compose.yml or .env file
+
+### Environment Variables
+- Backend needs: DATABASE_URL, JWT_SECRET, JWT_REFRESH_SECRET, PORT
+- Frontend needs: REACT_APP_API_URL
+- Missing vars show warnings but don't break (use defaults)
+
+## Evolution of Decisions
+
+### Changed from Initial Plan
+1. Removed phone verification requirement (now optional)
+2. Changed backend port from 5000 to 5001
+3. Added role-based access control (not in initial scope)
+4. Implemented full admin dashboard (expanded from basic CRUD)
+
+### Current Architecture Decisions
+- Docker Compose for development (confirmed working)
+- Zustand over Redux (simpler, sufficient for needs)
+- Prisma over raw SQL (type safety, easier migrations)
+- i18next for translations (standard, well-supported)
+
+## Tool Usage Patterns
+
+### Development Workflow
+1. Make code changes
+2. Docker Compose auto-reloads (nodemon/Vite)
+3. Check browser console for errors
+4. Check Docker logs for backend errors
+5. Test functionality manually
+6. Commit and push when working
+
+### Debugging
+- Frontend: Browser DevTools console
+- Backend: Docker logs (`docker-compose logs backend`)
+- API: Check network tab in DevTools
+- Database: Use Prisma Studio (`npx prisma studio`)
+
+### Git Workflow
+- Main branch: `main`
+- Commit messages: Descriptive, include feature summary
+- Push regularly after completing features
+- Repository: https://github.com/Talibdev27/FitPlate.git
+

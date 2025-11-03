@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ordersApi, Order, GetOrdersParams } from '../../api/orders';
 
 export const Orders = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,7 +12,7 @@ export const Orders = () => {
   
   // Pagination
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(20);
+  const [limit] = useState(20);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   
@@ -22,8 +22,6 @@ export const Orders = () => {
   const [dateFilter, setDateFilter] = useState<string>('today');
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-
-  const currentLanguage = i18n.language as 'uz' | 'ru' | 'en';
 
   const fetchOrders = async () => {
     try {
@@ -94,7 +92,7 @@ export const Orders = () => {
       await fetchOrders();
       if (selectedOrder?.id === orderId) {
         const updatedOrder = await ordersApi.getOrderById(orderId);
-        setSelectedOrder(updatedOrder.data);
+        setSelectedOrder(updatedOrder.data || null);
       }
     } catch (err: any) {
       alert(err.response?.data?.error?.message || t('admin.orders.updateError', 'Failed to update order status'));
