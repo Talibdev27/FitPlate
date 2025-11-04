@@ -8,7 +8,7 @@ import { rateLimiter } from './middleware/rateLimiter';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Middleware - configure helmet to work with CORS
 app.use(helmet({
@@ -21,6 +21,10 @@ const getFrontendOrigin = () => {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
   // Remove any trailing slashes and leading equals signs
   const sanitized = frontendUrl.replace(/^=+/, '').replace(/\/+$/, '');
+  // Support multiple origins (comma-separated) or single origin
+  if (sanitized.includes(',')) {
+    return sanitized.split(',').map(url => url.trim());
+  }
   return sanitized;
 };
 
@@ -35,6 +39,21 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting
 app.use(rateLimiter);
+
+// Root endpoint for Railway compatibility
+app.get('/', (req: Request, res: Response) => {
+  res.json({ 
+    message: 'Food Delivery API v1.0',
+    status: 'running',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/health',
+      api: '/api',
+      auth: '/api/auth',
+      docs: 'See API documentation'
+    }
+  });
+});
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
