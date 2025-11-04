@@ -1,6 +1,14 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+// Get API URL from environment variable or use default
+let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
+// Ensure API URL always ends with /api
+// Remove trailing slash if present, then ensure /api is at the end
+API_URL = API_URL.replace(/\/+$/, ''); // Remove trailing slashes
+if (!API_URL.endsWith('/api')) {
+  API_URL = `${API_URL}/api`;
+}
 
 // Log API URL in production for debugging (remove in production if needed)
 if (import.meta.env.MODE === 'production') {
