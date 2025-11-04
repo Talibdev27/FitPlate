@@ -15,7 +15,7 @@ services:
       - key: DATABASE_URL
         fromDatabase:
           name: fitplate-db
-          property: internalConnectionString
+          property: connectionString
         # Note: If blueprint deployment fails, manually set DATABASE_URL in Render dashboard
         # Get connection string from: Database Service → Connections → Internal Database URL
       - key: JWT_SECRET
