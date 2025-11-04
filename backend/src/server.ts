@@ -17,19 +17,57 @@ app.use(helmet({
 }));
 
 // CORS configuration - sanitize and validate FRONTEND_URL
-const getFrontendOrigin = () => {
+const getAllowedOrigins = () => {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
   // Remove any trailing slashes and leading equals signs
   const sanitized = frontendUrl.replace(/^=+/, '').replace(/\/+$/, '');
+  
+  // Build array of allowed origins
+  const origins: string[] = [];
+  
+  // Always include localhost for development
+  origins.push('http://localhost:3000');
+  
   // Support multiple origins (comma-separated) or single origin
   if (sanitized.includes(',')) {
-    return sanitized.split(',').map(url => url.trim());
+    const urlList = sanitized.split(',').map(url => url.trim()).filter(url => url);
+    origins.push(...urlList);
+  } else if (sanitized && sanitized !== 'http://localhost:3000') {
+    // Single origin (avoid duplicates)
+    origins.push(sanitized);
   }
-  return sanitized;
+  
+  return origins;
+};
+
+// Vercel preview deployment pattern
+const vercelPattern = /^https?:\/\/[^/]+\.vercel\.app$/;
+
+// CORS origin validation function
+const corsOrigin = (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+  const allowedOrigins = getAllowedOrigins();
+  
+  // Allow requests with no origin (like mobile apps or curl requests)
+  if (!origin) {
+    return callback(null, true);
+  }
+  
+  // Check if origin is in the allowed list
+  if (allowedOrigins.includes(origin)) {
+    return callback(null, true);
+  }
+  
+  // Check if origin matches Vercel preview deployment pattern
+  if (vercelPattern.test(origin)) {
+    return callback(null, true);
+  }
+  
+  // Origin not allowed
+  callback(null, false);
 };
 
 app.use(cors({
-  origin: getFrontendOrigin(),
+  origin: corsOrigin,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
