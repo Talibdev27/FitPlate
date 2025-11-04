@@ -49,24 +49,57 @@ export class PaymeService {
       testMode: process.env.PAYME_TEST_MODE === 'true',
     };
 
+    // Initialize client lazily - only when credentials are available
+    // This allows the service to be imported even if credentials aren't set yet
+    if (this.config.merchantId && this.config.secretKey) {
+      this.client = axios.create({
+        baseURL: this.config.baseUrl,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Auth': this.config.merchantId,
+        },
+        timeout: 30000,
+      });
+    } else {
+      // Create a dummy client to prevent errors, but it won't work until credentials are set
+      this.client = axios.create({
+        baseURL: this.config.baseUrl,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        timeout: 30000,
+      });
+      console.warn('Payme credentials not configured. PaymeService will not function until PAYME_MERCHANT_ID and PAYME_SECRET_KEY are set.');
+    }
+  }
+
+  /**
+   * Check if PaymeService is properly configured
+   */
+  private ensureConfigured(): void {
     if (!this.config.merchantId || !this.config.secretKey) {
       throw new Error('Payme credentials not configured. Please set PAYME_MERCHANT_ID and PAYME_SECRET_KEY');
     }
-
-    this.client = axios.create({
-      baseURL: this.config.baseUrl,
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Auth': this.config.merchantId,
-      },
-      timeout: 30000,
-    });
+    // Reinitialize client if credentials are now available
+    if (!this.client.defaults.headers['X-Auth']) {
+      this.client = axios.create({
+        baseURL: this.config.baseUrl,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Auth': this.config.merchantId,
+        },
+        timeout: 30000,
+      });
+    }
   }
 
   /**
    * Generate HMAC-SHA256 signature for Payme request
    */
   private generateSignature(data: string): string {
+    if (!this.config.secretKey) {
+      throw new Error('Payme secret key not configured');
+    }
     return crypto
       .createHmac('sha256', this.config.secretKey)
       .update(data)
@@ -114,6 +147,7 @@ export class PaymeService {
    * Create a payment invoice in Payme
    */
   async createPayment(params: CreatePaymentParams): Promise<{ invoiceId: string; paymentUrl: string }> {
+    this.ensureConfigured();
     const account: PaymentAccount = {
       order_id: params.orderId,
       user_id: params.userId,
@@ -152,6 +186,7 @@ export class PaymeService {
     amount: number;
     transactionId?: string;
   }> {
+    this.ensureConfigured();
     const response = await this.makeRequest('receipts.get', {
       id: invoiceId,
     });
@@ -184,6 +219,7 @@ export class PaymeService {
    * Cancel a payment
    */
   async cancelPayment(invoiceId: string): Promise<boolean> {
+    this.ensureConfigured();
     const response = await this.makeRequest('receipts.cancel', {
       id: invoiceId,
     });
@@ -199,6 +235,7 @@ export class PaymeService {
    * Verify webhook signature
    */
   verifyWebhookSignature(data: string, signature: string): boolean {
+    this.ensureConfigured();
     return this.verifySignature(data, signature);
   }
 
