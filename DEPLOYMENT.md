@@ -426,14 +426,27 @@ This project includes a `render.yaml` configuration file for automatic deploymen
 
 #### Quick Setup Steps:
 
-1. **Connect GitHub Repository**
+1. **Deploy Backend and Database via Blueprint**
    - Go to https://dashboard.render.com
    - Click "New +" → "Blueprint"
    - Connect your GitHub repository: `Talibdev27/FitPlate`
-   - Render will automatically detect `render.yaml`
+   - Render will automatically detect `render.yaml` and create:
+     - Backend web service (`fitplate-backend`)
+     - PostgreSQL database (`fitplate-db`)
+   - **Note:** Frontend static site must be created manually (see step 2)
 
-2. **Configure Environment Variables**
-   After the blueprint creates services, set these environment variables:
+2. **Create Frontend Static Site (Manual)**
+   - In Render dashboard, click "New +" → "Static Site"
+   - Connect to GitHub: Select `Talibdev27/FitPlate`
+   - Configure:
+     - **Name:** `fitplate-frontend`
+     - **Build Command:** `cd frontend && npm ci && npm run build`
+     - **Publish Directory:** `frontend/dist`
+     - **Root Directory:** Leave empty
+   - Click "Create Static Site"
+
+3. **Configure Environment Variables**
+   After services are created, set these environment variables:
 
    **Backend Service (`fitplate-backend`):**
    - `JWT_SECRET` - Generate with: `openssl rand -base64 32`
@@ -446,7 +459,7 @@ This project includes a `render.yaml` configuration file for automatic deploymen
    **Frontend Service (`fitplate-frontend`):**
    - `VITE_API_URL` - Your backend API URL (e.g., `https://fitplate-backend.onrender.com/api`)
 
-3. **Deploy**
+4. **Deploy**
    - Render will automatically deploy all services
    - Database migrations run automatically on first deploy
    - Services will be available at:
