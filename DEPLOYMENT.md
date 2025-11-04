@@ -432,9 +432,11 @@ sudo ufw enable
 
 1. **Frontend (Vercel)**:
    - Connect GitHub repo
-   - Set build command: `npm run build`
-   - Set output directory: `dist`
-   - Set environment: `REACT_APP_API_URL=https://your-backend.railway.app/api`
+   - Set root directory: `frontend`
+   - Set build command: `npm run build` (auto-detected)
+   - Set output directory: `dist` (auto-detected)
+   - Set environment variable: `VITE_API_URL=https://your-backend.railway.app/api`
+   - See `frontend/VERCEL_DEPLOYMENT.md` for detailed instructions
 
 2. **Backend + DB (Railway)**:
    - Add PostgreSQL plugin

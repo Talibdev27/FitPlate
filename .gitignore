@@ -47,3 +47,6 @@ backend/prisma/migrations/
 .next
 out
 
+# Vercel
+.vercel
+
