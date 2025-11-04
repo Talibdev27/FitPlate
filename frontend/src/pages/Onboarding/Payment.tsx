@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { OnboardingStepper } from '../../components/OnboardingStepper';
+import { paymentApi } from '../../api/payments';
 
 interface OrderSummary {
   plan: {
@@ -100,27 +101,37 @@ export const Payment = () => {
 
       const onboardingData = JSON.parse(sessionStorage.getItem('onboarding_data') || '{}');
 
-      // TODO: Integrate with Click payment gateway
-      // For now, simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Create Payme payment
+      const paymentResponse = await paymentApi.createPaymePayment({
+        amount: orderSummary.total,
+        subscriptionId: onboardingData.subscriptionId, // Will be created after payment
+        description: `Payment for ${orderSummary.plan.name} subscription`,
+        returnUrl: `${window.location.origin}/onboarding/payment/callback`,
+      });
 
-      // Save payment and subscription data
-      sessionStorage.setItem('onboarding_data', JSON.stringify({
-        ...onboardingData,
-        payment: {
-          status: 'completed',
-          amount: orderSummary.total,
-          method: 'click',
-          completedAt: new Date().toISOString(),
-        },
-        step: 5,
-      }));
+      if (paymentResponse.success && paymentResponse.data) {
+        // Save payment info to session storage
+        sessionStorage.setItem('onboarding_data', JSON.stringify({
+          ...onboardingData,
+          payment: {
+            paymentId: paymentResponse.data.paymentId,
+            invoiceId: paymentResponse.data.invoiceId,
+            amount: paymentResponse.data.amount,
+            method: 'payme',
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+          },
+          step: 5,
+        }));
 
-      // Navigate to success page
-      navigate('/onboarding/success');
+        // Redirect to Payme payment page
+        window.location.href = paymentResponse.data.paymentUrl;
+      } else {
+        throw new Error('Failed to create payment');
+      }
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Payment processing failed. Please try again.');
-    } finally {
+      console.error('Payment error:', err);
+      setError(err.response?.data?.error?.message || err.message || 'Payment processing failed. Please try again.');
       setLoading(false);
     }
   };
@@ -240,9 +251,9 @@ export const Payment = () => {
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-semibold text-gray-900">Click</p>
+                      <p className="font-semibold text-gray-900">Payme</p>
                       <p className="text-sm text-gray-600">
-                        {t('onboarding.payment.clickDescription', 'Pay securely with Click')}
+                        {t('onboarding.payment.paymeDescription', 'Pay securely with Payme')}
                       </p>
                     </div>
                     <div className="text-2xl">💳</div>

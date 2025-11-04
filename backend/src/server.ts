@@ -113,6 +113,7 @@ import staffRoutes from './routes/staff';
 import mealRoutes from './routes/meal';
 import orderRoutes from './routes/order';
 import locationRoutes from './routes/location';
+import paymentRoutes from './routes/payment';
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/profile', profileRoutes);
@@ -122,6 +123,7 @@ app.use('/api/staff', staffRoutes);
 app.use('/api/meals', mealRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/locations', locationRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

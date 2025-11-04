@@ -21,6 +21,7 @@ import { PersonalDetails } from './pages/Onboarding/PersonalDetails';
 import { MealSelection } from './pages/Onboarding/MealSelection';
 import { DeliveryAddress } from './pages/Onboarding/DeliveryAddress';
 import { Payment } from './pages/Onboarding/Payment';
+import { PaymentCallback } from './pages/Onboarding/PaymentCallback';
 import { Success } from './pages/Onboarding/Success';
 import { UserLayout } from './components/UserLayout';
 import { DashboardHome } from './pages/Dashboard/DashboardHome';
@@ -89,6 +90,14 @@ function App() {
               element={
                 <ProtectedRoute requireUser>
                   <Payment />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/onboarding/payment/callback"
+              element={
+                <ProtectedRoute requireUser>
+                  <PaymentCallback />
                 </ProtectedRoute>
               }
             />
