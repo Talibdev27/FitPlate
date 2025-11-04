@@ -10,7 +10,7 @@
 
 ### Option 2: Cloud Platform (Recommended for Scale)
 - **Providers**: 
-  - **Vercel** (Frontend) + **Railway/Render** (Backend + DB)
+  - **Render** (Frontend + Backend + DB) - Currently configured ✅
   - **AWS** (Elastic Beanstalk, ECS, or EC2)
   - **Google Cloud Platform** (Cloud Run or Compute Engine)
   - **Azure** (App Service or Container Instances)
@@ -420,29 +420,67 @@ sudo ufw enable
 3. Set environment variables
 4. Deploy automatically
 
-### Render.com
+### Render.com (Recommended - Currently Configured)
 
-1. Create Web Service for backend
-2. Create PostgreSQL database
-3. Create Static Site for frontend
-4. Set environment variables
-5. Deploy
+This project includes a `render.yaml` configuration file for automatic deployment setup.
 
-### Vercel + Railway
+#### Quick Setup Steps:
 
-1. **Frontend (Vercel)**:
-   - Connect GitHub repo
-   - Set root directory: `frontend`
-   - Set build command: `npm run build` (auto-detected)
-   - Set output directory: `dist` (auto-detected)
-   - Set environment variable: `VITE_API_URL=https://your-backend.railway.app/api`
-   - See `frontend/VERCEL_DEPLOYMENT.md` for detailed instructions
+1. **Connect GitHub Repository**
+   - Go to https://dashboard.render.com
+   - Click "New +" → "Blueprint"
+   - Connect your GitHub repository: `Talibdev27/FitPlate`
+   - Render will automatically detect `render.yaml`
 
-2. **Backend + DB (Railway)**:
-   - Add PostgreSQL plugin
-   - Add Node.js service
-   - Set environment variables
-   - Deploy
+2. **Configure Environment Variables**
+   After the blueprint creates services, set these environment variables:
+
+   **Backend Service (`fitplate-backend`):**
+   - `JWT_SECRET` - Generate with: `openssl rand -base64 32`
+   - `JWT_REFRESH_SECRET` - Generate with: `openssl rand -base64 32`
+   - `FRONTEND_URL` - Your frontend URL (e.g., `https://fitplate-frontend.onrender.com`)
+   - Payment keys (Click): `CLICK_MERCHANT_ID`, `CLICK_SERVICE_ID`, `CLICK_SECRET_KEY`
+   - Cloudinary: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+   - SMS/Email (optional): `SMS_API_KEY`, `SMS_API_URL`, `EMAIL_SERVICE_API_KEY`, `EMAIL_FROM_ADDRESS`
+
+   **Frontend Service (`fitplate-frontend`):**
+   - `VITE_API_URL` - Your backend API URL (e.g., `https://fitplate-backend.onrender.com/api`)
+
+3. **Deploy**
+   - Render will automatically deploy all services
+   - Database migrations run automatically on first deploy
+   - Services will be available at:
+     - Backend: `https://fitplate-backend.onrender.com`
+     - Frontend: `https://fitplate-frontend.onrender.com`
+
+#### Manual Setup (Alternative)
+
+If you prefer manual setup instead of using the blueprint:
+
+1. **PostgreSQL Database**
+   - Create new PostgreSQL database
+   - Name: `fitplate-db`
+   - Note the connection string
+
+2. **Backend Web Service**
+   - Type: Web Service
+   - Environment: Node
+   - Build Command: `cd backend && npm ci && npx prisma generate && npm run build`
+   - Start Command: `cd backend && npx prisma migrate deploy && npm start`
+   - Root Directory: Leave empty (or set to `backend` if needed)
+   - Environment Variables: Add all backend variables listed above
+
+3. **Frontend Static Site**
+   - Type: Static Site
+   - Build Command: `cd frontend && npm ci && npm run build`
+   - Publish Directory: `frontend/dist`
+   - Root Directory: Leave empty
+   - Environment Variables: `VITE_API_URL`
+
+#### Custom Domain Setup
+- In Render dashboard, go to your service
+- Click "Settings" → "Custom Domains"
+- Add your domain and follow DNS instructions
 
 ## Post-Deployment Checklist
 

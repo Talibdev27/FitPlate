@@ -47,6 +47,7 @@ backend/prisma/migrations/
 .next
 out
 
-# Vercel
+# Deployment platforms
 .vercel
+.render
 
