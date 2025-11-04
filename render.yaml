@@ -52,5 +52,6 @@ databases:
   - name: fitplate-db
     databaseName: food_delivery
     user: fitplate_user
-    plan: starter
+    # Plan removed - Render will use default plan for new databases
+    # Legacy 'starter' plan is no longer supported
 
