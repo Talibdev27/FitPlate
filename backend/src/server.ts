@@ -10,11 +10,25 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(helmet());
+// Middleware - configure helmet to work with CORS
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginEmbedderPolicy: false,
+}));
+
+// CORS configuration - sanitize and validate FRONTEND_URL
+const getFrontendOrigin = () => {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  // Remove any trailing slashes and leading equals signs
+  const sanitized = frontendUrl.replace(/^=+/, '').replace(/\/+$/, '');
+  return sanitized;
+};
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
+  origin: getFrontendOrigin(),
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

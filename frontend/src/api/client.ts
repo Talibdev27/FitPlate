@@ -2,6 +2,11 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
+// Log API URL in production for debugging (remove in production if needed)
+if (import.meta.env.MODE === 'production') {
+  console.log('[API Config] Using API URL:', API_URL);
+}
+
 export const apiClient = axios.create({
   baseURL: API_URL,
   headers: {
