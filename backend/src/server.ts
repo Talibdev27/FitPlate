@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
@@ -37,12 +37,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(rateLimiter);
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 // API routes
-app.get('/api', (req, res) => {
+app.get('/api', (req: Request, res: Response) => {
   res.json({ message: 'Food Delivery API v1.0' });
 });
 
