@@ -482,6 +482,73 @@ If you prefer manual setup instead of using the blueprint:
 - Click "Settings" → "Custom Domains"
 - Add your domain and follow DNS instructions
 
+#### Troubleshooting Render Deployment
+
+##### Error: "DATABASE_URL must start with postgresql:// or postgres://"
+
+This error occurs when Prisma cannot find a valid database connection string. Here's how to fix it:
+
+**Option 1: Manual DATABASE_URL Setup (Recommended if Blueprint Fails)**
+
+1. **Get Database Connection String:**
+   - Go to your Render dashboard
+   - Navigate to your PostgreSQL database service (`fitplate-db`)
+   - Click on the database service
+   - Go to "Connections" tab
+   - Copy the "Internal Database URL" (use this for services in the same Render account)
+   - Format should be: `postgresql://user:password@host:port/database?schema=public`
+
+2. **Set DATABASE_URL in Backend Service:**
+   - Go to your backend web service (`fitplate-backend`)
+   - Click "Environment" in the left sidebar
+   - Click "+ Add Environment Variable"
+   - Key: `DATABASE_URL`
+   - Value: Paste the connection string you copied
+   - Click "Save Changes"
+
+3. **Redeploy:**
+   - The service will automatically redeploy with the new environment variable
+   - Check deployment logs to verify Prisma can now connect
+
+**Option 2: Verify Blueprint Configuration**
+
+If using the `render.yaml` blueprint:
+
+1. Ensure the database service (`fitplate-db`) was created successfully
+2. Check that the database name matches exactly: `fitplate-db`
+3. Verify the backend service references the correct database name
+4. If blueprint failed, delete services and recreate using the blueprint
+
+**Option 3: Check Connection String Format**
+
+The DATABASE_URL must be in this exact format:
+```
+postgresql://username:password@host:port/database_name?schema=public
+```
+
+Common issues:
+- Missing `?schema=public` at the end (required for Prisma)
+- Using `postgres://` instead of `postgresql://` (both work, but `postgresql://` is preferred)
+- Special characters in password not URL-encoded
+
+**Verify Fix:**
+After setting DATABASE_URL, check the deployment logs:
+- Should see: "Prisma schema loaded from prisma/schema.prisma"
+- Should see: "Applying migration..." or "Database is up to date"
+- Should NOT see: "Error validating datasource" or "URL must start with postgresql://"
+
+##### Other Common Render Issues
+
+**Build Fails with "tsc: command not found":**
+- The build script uses `./node_modules/.bin/tsc` which should work
+- If it fails, check that `npm ci` completed successfully
+- Verify TypeScript is in `devDependencies` in `package.json`
+
+**Service Stuck in "Deploying" State:**
+- Check build logs for errors
+- Verify all required environment variables are set
+- Ensure database service is running and accessible
+
 ## Post-Deployment Checklist
 
 - [ ] Test user registration

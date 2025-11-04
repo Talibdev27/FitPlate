@@ -2,7 +2,7 @@ import { Response } from 'express';
 import prisma from '../utils/db';
 import { createError } from '../middleware/errorHandler';
 import { AuthRequest } from '../middleware/auth';
-import { paymeService } from '../services/paymeService';
+// import { paymeService } from '../services/paymeService'; // Commented out - Payme disabled until credentials are available
 
 interface CreatePaymentBody {
   amount: number;
@@ -12,9 +12,14 @@ interface CreatePaymentBody {
   returnUrl?: string;
 }
 
+// ============================================================================
+// PAYME FUNCTIONS - COMMENTED OUT UNTIL CREDENTIALS ARE AVAILABLE
+// ============================================================================
 /**
  * Create a Payme payment
+ * @deprecated Commented out until Payme credentials are available
  */
+/*
 export const createPaymePayment = async (req: AuthRequest, res: Response) => {
   if (!req.userId) {
     throw createError('User authentication required', 401);
@@ -80,10 +85,13 @@ export const createPaymePayment = async (req: AuthRequest, res: Response) => {
     throw createError(error.message || 'Failed to create payment', 500);
   }
 };
+*/
 
 /**
- * Verify payment status
+ * Verify payment status (Payme-specific)
+ * @deprecated Commented out until Payme credentials are available
  */
+/*
 export const verifyPayment = async (req: AuthRequest, res: Response) => {
   if (!req.userId) {
     throw createError('User authentication required', 401);
@@ -144,9 +152,10 @@ export const verifyPayment = async (req: AuthRequest, res: Response) => {
     throw createError(error.message || 'Failed to verify payment', 500);
   }
 };
+*/
 
 /**
- * Get payment status
+ * Get payment status (generic - works for all payment methods)
  */
 export const getPaymentStatus = async (req: AuthRequest, res: Response) => {
   if (!req.userId) {
@@ -188,7 +197,9 @@ export const getPaymentStatus = async (req: AuthRequest, res: Response) => {
 
 /**
  * Handle Payme webhook
+ * @deprecated Commented out until Payme credentials are available
  */
+/*
 export const handlePaymeWebhook = async (req: AuthRequest, res: Response) => {
   try {
     const { method, params } = req.body;
@@ -286,6 +297,87 @@ export const handlePaymeWebhook = async (req: AuthRequest, res: Response) => {
         message: 'Internal error',
       },
     });
+  }
+};
+*/
+// ============================================================================
+
+/**
+ * Create a cash payment
+ * Cash payments are immediately marked as COMPLETED (cash on delivery)
+ */
+export const createCashPayment = async (req: AuthRequest, res: Response) => {
+  if (!req.userId) {
+    throw createError('User authentication required', 401);
+  }
+
+  const { amount, orderId, subscriptionId, description }: CreatePaymentBody = req.body;
+
+  if (!amount || amount <= 0) {
+    throw createError('Invalid payment amount', 400);
+  }
+
+  if (!orderId && !subscriptionId) {
+    throw createError('Either orderId or subscriptionId is required', 400);
+  }
+
+  try {
+    // Create payment record in database with COMPLETED status (cash on delivery)
+    const payment = await prisma.payment.create({
+      data: {
+        userId: req.userId,
+        orderId: orderId || null,
+        subscriptionId: subscriptionId || null,
+        amount,
+        currency: 'UZS',
+        status: 'COMPLETED', // Cash payments are immediately completed
+        paymentMethod: 'cash',
+        transactionId: null, // Cash doesn't have transaction ID
+        gatewayResponse: {
+          method: 'cash',
+          completedAt: new Date().toISOString(),
+          description: description || `Cash payment for ${subscriptionId ? 'subscription' : 'order'}`,
+        },
+      },
+    });
+
+    // If this is a subscription payment, activate the subscription
+    if (payment.subscriptionId) {
+      await prisma.subscription.update({
+        where: { id: payment.subscriptionId },
+        data: {
+          status: 'ACTIVE',
+          paymentStatus: 'COMPLETED',
+        },
+      });
+    }
+
+    // If this is an order payment, update order status
+    if (payment.orderId) {
+      await prisma.order.update({
+        where: { id: payment.orderId },
+        data: {
+          status: 'PENDING', // Order is ready to be prepared
+        },
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        paymentId: payment.id,
+        status: payment.status,
+        amount: payment.amount,
+        currency: payment.currency,
+        paymentMethod: payment.paymentMethod,
+        orderId: payment.orderId,
+        subscriptionId: payment.subscriptionId,
+        createdAt: payment.createdAt,
+      },
+    });
+  } catch (error: any) {
+    console.error('Error creating cash payment:', error);
+    throw createError(error.message || 'Failed to create payment', 500);
   }
 };
 
