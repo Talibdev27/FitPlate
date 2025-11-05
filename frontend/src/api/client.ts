@@ -3,16 +3,68 @@ import axios from 'axios';
 // Get API URL from environment variable or use default
 let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
-// Ensure API URL always ends with /api
-// Remove trailing slash if present, then ensure /api is at the end
+// Validate and normalize API URL
+const isValidAbsoluteUrl = (url: string): boolean => {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
+// Check if API_URL is missing or invalid in production
+if (import.meta.env.MODE === 'production') {
+  if (!import.meta.env.VITE_API_URL) {
+    console.error(
+      '[API Config Error] VITE_API_URL is not set in Vercel environment variables!',
+      '\nPlease set VITE_API_URL to your backend URL (e.g., https://fitplate-production.up.railway.app/api)',
+      '\nCurrent API_URL will be:', API_URL
+    );
+  } else if (!isValidAbsoluteUrl(API_URL)) {
+    console.error(
+      '[API Config Error] VITE_API_URL must be an absolute URL with protocol (http:// or https://)',
+      '\nCurrent value:', import.meta.env.VITE_API_URL,
+      '\nExpected format: https://your-backend-domain.com/api'
+    );
+    // In production, if URL is invalid, we should throw an error to prevent deployment
+    throw new Error(
+      `Invalid VITE_API_URL: "${import.meta.env.VITE_API_URL}". Must be an absolute URL starting with http:// or https://`
+    );
+  }
+}
+
+// Ensure API URL is absolute (starts with http:// or https://)
+if (!API_URL.startsWith('http://') && !API_URL.startsWith('https://')) {
+  // If it's not absolute, prepend https:// (assuming production)
+  if (import.meta.env.MODE === 'production') {
+    console.warn(
+      '[API Config Warning] VITE_API_URL missing protocol, prepending https://',
+      '\nOriginal:', API_URL
+    );
+    API_URL = `https://${API_URL}`;
+  } else {
+    // In development, default to localhost
+    API_URL = 'http://localhost:5001/api';
+  }
+}
+
+// Normalize the URL: remove trailing slashes, then ensure /api is at the end
 API_URL = API_URL.replace(/\/+$/, ''); // Remove trailing slashes
 if (!API_URL.endsWith('/api')) {
   API_URL = `${API_URL}/api`;
 }
 
-// Log API URL in production for debugging (remove in production if needed)
+// Log API URL in production for debugging
 if (import.meta.env.MODE === 'production') {
   console.log('[API Config] Using API URL:', API_URL);
+} else {
+  console.log('[API Config] Development API URL:', API_URL);
+}
+
+// Final validation
+if (!isValidAbsoluteUrl(API_URL)) {
+  throw new Error(`Invalid API_URL after normalization: "${API_URL}". Must be an absolute URL.`);
 }
 
 export const apiClient = axios.create({
