@@ -8,16 +8,23 @@
 - **Cost**: $5-20/month
 - **Best for**: Small to medium scale, full control
 
-### Option 2: Cloud Platform (Recommended for Scale)
+### Option 2: Vercel + Railway (Recommended - Most Cost-Effective) ✅
+- **Frontend**: Vercel (Free tier available)
+- **Backend**: Railway (Pay-as-you-go, ~$5-10/month)
+- **Database**: Railway PostgreSQL (included)
+- **Cost**: ~$5-10/month (much cheaper than Render)
+- **Best for**: Modern deployment, cost-effective, great developer experience
+
+### Option 3: Cloud Platform (Alternative)
 - **Providers**: 
-  - **Render** (Frontend + Backend + DB) - Currently configured ✅
+  - **Render** (Frontend + Backend + DB) - More expensive
   - **AWS** (Elastic Beanstalk, ECS, or EC2)
   - **Google Cloud Platform** (Cloud Run or Compute Engine)
   - **Azure** (App Service or Container Instances)
 - **Cost**: $10-50/month (varies by traffic)
 - **Best for**: Auto-scaling, managed services
 
-### Option 3: Docker Hosting
+### Option 4: Docker Hosting
 - **Providers**: 
   - **DigitalOcean App Platform**
   - **Fly.io**
@@ -410,7 +417,156 @@ sudo ufw enable
 
 ## Alternative: Quick Deploy Platforms
 
-### Railway.app
+### Vercel + Railway (Recommended - Cost-Effective) ✅
+
+This is the most cost-effective option, deploying frontend to Vercel (free tier) and backend to Railway (~$5-10/month).
+
+#### Step 1: Deploy Backend to Railway
+
+1. **Create Railway Account & Project**
+   - Go to https://railway.app
+   - Sign up/login with GitHub
+   - Click "New Project" → "Deploy from GitHub repo"
+   - Select your repository: `Talibdev27/FitPlate`
+
+2. **Add PostgreSQL Database**
+   - In Railway project, click "+ New" → "Database" → "Add PostgreSQL"
+   - Railway will automatically create a PostgreSQL database
+   - Note the database connection details (will be available as `DATABASE_URL` environment variable)
+
+3. **Deploy Backend Service**
+   - In Railway project, click "+ New" → "GitHub Repo" (if not already connected)
+   - Select your repository again
+   - Railway will auto-detect the backend (it looks for `backend/` directory or `railway.toml`)
+   - **Root Directory**: Set to `backend` (important!)
+   - Railway will use the `backend/railway.toml` configuration automatically
+
+4. **Configure Backend Environment Variables**
+   - In Railway, go to your backend service → "Variables" tab
+   - Add these environment variables:
+     - `NODE_ENV` = `production`
+     - `PORT` = `5001` (or leave Railway's auto-assigned port)
+     - `DATABASE_URL` = (automatically set by Railway when you link the database)
+     - `JWT_SECRET` = Generate with: `openssl rand -base64 32`
+     - `JWT_REFRESH_SECRET` = Generate with: `openssl rand -base64 32`
+     - `FRONTEND_URL` = (set this after deploying frontend, e.g., `https://your-app.vercel.app`)
+       - **Important:** This must match your Vercel frontend URL exactly (e.g., `https://fit-plate-mu.vercel.app`)
+       - The backend CORS will automatically allow all `*.vercel.app` domains, but setting this ensures proper CORS handling
+     - Payment keys (if needed): `CLICK_MERCHANT_ID`, `CLICK_SERVICE_ID`, `CLICK_SECRET_KEY`
+     - Cloudinary: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+     - SMS/Email (optional): `SMS_API_KEY`, `SMS_API_URL`, `EMAIL_SERVICE_API_KEY`, `EMAIL_FROM_ADDRESS`
+
+5. **Link Database to Backend**
+   - In Railway, go to your backend service
+   - Click "Variables" tab
+   - Click "+ Add Variable" → "Reference Variable"
+   - Select your PostgreSQL database → `DATABASE_URL`
+   - This automatically sets the connection string
+
+6. **Deploy**
+   - Railway will automatically build and deploy
+   - Database migrations run automatically (configured in `railway.toml`)
+   - Your backend will be available at: `https://your-backend-name.up.railway.app`
+   - Note the backend URL - you'll need it for the frontend
+
+#### Step 2: Deploy Frontend to Vercel
+
+1. **Create Vercel Account**
+   - Go to https://vercel.com
+   - Sign up/login with GitHub
+
+2. **Import Project**
+   - Click "Add New" → "Project"
+   - Import your GitHub repository: `Talibdev27/FitPlate`
+   - Vercel will auto-detect it's a Vite project
+
+3. **Configure Project Settings**
+   - **Framework Preset**: Vite (auto-detected)
+   - **Root Directory**: `frontend` (click "Edit" and set to `frontend`)
+   - **Build Command**: `npm run build` (auto-detected)
+   - **Output Directory**: `dist` (auto-detected)
+   - **Install Command**: `npm ci` (auto-detected)
+
+4. **Set Environment Variables**
+   - In Vercel project settings, go to "Settings" → "Environment Variables"
+   - Add: `VITE_API_URL` = `https://your-backend-name.up.railway.app/api`
+     - Replace `your-backend-name` with your actual Railway backend URL
+     - Make sure to include `/api` at the end
+
+5. **Deploy**
+   - Click "Deploy"
+   - Vercel will build and deploy your frontend
+   - Your frontend will be available at: `https://your-project.vercel.app`
+
+6. **Update Backend CORS (if needed)**
+   - After frontend is deployed, update `FRONTEND_URL` in Railway backend variables
+   - Set it to your Vercel frontend URL: `https://your-project.vercel.app`
+   - This ensures CORS works correctly
+
+#### Step 3: Verify Deployment
+
+1. **Test Frontend**
+   - Visit your Vercel URL
+   - Check browser console for API connection
+
+2. **Test Backend**
+   - Visit `https://your-backend-name.up.railway.app/api/health` (if you have a health endpoint)
+   - Or test API directly from frontend
+
+3. **Test Database**
+   - Create a test user/order from the frontend
+   - Verify data is saved in Railway PostgreSQL database
+
+#### Railway Configuration
+
+The project includes `backend/railway.toml` which automatically:
+- Builds the TypeScript backend
+- Generates Prisma client
+- Runs database migrations on deploy
+- Starts the production server
+
+#### Cost Breakdown
+
+- **Vercel**: Free tier (hobby plan) - 100GB bandwidth/month
+- **Railway**: Pay-as-you-go
+  - Backend service: ~$5/month (512MB RAM)
+  - PostgreSQL: ~$5/month (256MB storage)
+  - **Total**: ~$10/month (much cheaper than Render's $17.50/month)
+
+#### Custom Domains
+
+**Vercel (Frontend):**
+- Go to project → "Settings" → "Domains"
+- Add your custom domain
+- Vercel provides free SSL certificates
+
+**Railway (Backend):**
+- Go to service → "Settings" → "Networking"
+- Add custom domain (requires paid plan or custom domain support)
+
+#### Troubleshooting
+
+**Frontend can't connect to backend:**
+- Verify `VITE_API_URL` is set correctly in Vercel
+- Check that Railway backend is running
+- Verify CORS settings in backend allow Vercel domain
+
+**Database connection errors:**
+- Verify `DATABASE_URL` is linked correctly in Railway
+- Check that database service is running
+- Ensure migrations ran successfully (check Railway logs)
+
+**Build fails on Railway:**
+- Check that Root Directory is set to `backend`
+- Verify `railway.toml` is in the `backend/` directory
+- Check Railway build logs for specific errors
+
+**Build fails on Vercel:**
+- Verify Root Directory is set to `frontend`
+- Check that `vercel.json` is in the `frontend/` directory
+- Ensure `VITE_API_URL` is set (even if backend isn't ready yet)
+
+### Railway.app (Full Stack - Alternative)
 
 1. Connect GitHub repository
 2. Add services:
@@ -420,38 +576,31 @@ sudo ufw enable
 3. Set environment variables
 4. Deploy automatically
 
-### Render.com (Recommended - Currently Configured)
+### Render.com (Alternative - More Expensive)
 
 This project includes a `render.yaml` configuration file for automatic deployment setup.
 
 #### Quick Setup Steps:
 
-1. **Deploy Backend and Database via Blueprint**
+1. **Deploy All Services via Blueprint (One-Click Deploy)**
    - Go to https://dashboard.render.com
    - Click "New +" → "Blueprint"
    - Connect your GitHub repository: `Talibdev27/FitPlate`
    - Render will automatically detect `render.yaml` and create:
      - Backend web service (`fitplate-backend`)
+     - Frontend static site (`fitplate-frontend`)
      - PostgreSQL database (`fitplate-db`)
-   - **Note:** Frontend static site must be created manually (see step 2)
+   - All services will be deployed automatically together!
 
-2. **Create Frontend Static Site (Manual)**
-   - In Render dashboard, click "New +" → "Static Site"
-   - Connect to GitHub: Select `Talibdev27/FitPlate`
-   - Configure:
-     - **Name:** `fitplate-frontend`
-     - **Build Command:** `cd frontend && npm ci && npm run build`
-     - **Publish Directory:** `frontend/dist`
-     - **Root Directory:** Leave empty
-   - Click "Create Static Site"
-
-3. **Configure Environment Variables**
+2. **Configure Environment Variables**
    After services are created, set these environment variables:
 
    **Backend Service (`fitplate-backend`):**
    - `JWT_SECRET` - Generate with: `openssl rand -base64 32`
    - `JWT_REFRESH_SECRET` - Generate with: `openssl rand -base64 32`
-   - `FRONTEND_URL` - Your frontend URL (e.g., `https://fitplate-frontend.onrender.com`)
+   - `FRONTEND_URL` - Your frontend URL (e.g., `https://fit-plate-mu.vercel.app` if using Vercel)
+     - **Important:** Must match your frontend domain exactly for proper CORS handling
+     - The backend automatically allows all `*.vercel.app` domains, but setting this ensures correct configuration
    - Payment keys (Click): `CLICK_MERCHANT_ID`, `CLICK_SERVICE_ID`, `CLICK_SECRET_KEY`
    - Cloudinary: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
    - SMS/Email (optional): `SMS_API_KEY`, `SMS_API_URL`, `EMAIL_SERVICE_API_KEY`, `EMAIL_FROM_ADDRESS`
@@ -459,12 +608,14 @@ This project includes a `render.yaml` configuration file for automatic deploymen
    **Frontend Service (`fitplate-frontend`):**
    - `VITE_API_URL` - Your backend API URL (e.g., `https://fitplate-backend.onrender.com/api`)
 
-4. **Deploy**
-   - Render will automatically deploy all services
+3. **Wait for Deployment**
+   - Render will automatically deploy all services from the blueprint
    - Database migrations run automatically on first deploy
    - Services will be available at:
      - Backend: `https://fitplate-backend.onrender.com`
      - Frontend: `https://fitplate-frontend.onrender.com`
+   
+   **Important:** After the backend is deployed, update the frontend's `VITE_API_URL` environment variable to point to your backend URL (e.g., `https://fitplate-backend.onrender.com/api`). This will trigger a frontend redeploy with the correct API endpoint.
 
 #### Manual Setup (Alternative)
 

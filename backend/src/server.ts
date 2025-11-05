@@ -40,8 +40,8 @@ const getAllowedOrigins = () => {
   return origins;
 };
 
-// Vercel preview deployment pattern
-const vercelPattern = /^https?:\/\/[^/]+\.vercel\.app$/;
+// Vercel deployment pattern - matches all *.vercel.app subdomains
+const vercelPattern = /^https?:\/\/[^/]+\.vercel\.app$/i;
 
 // CORS origin validation function
 const corsOrigin = (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
@@ -54,15 +54,25 @@ const corsOrigin = (origin: string | undefined, callback: (err: Error | null, al
   
   // Check if origin is in the allowed list
   if (allowedOrigins.includes(origin)) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[CORS] Allowing origin from allowed list: ${origin}`);
+    }
     return callback(null, true);
   }
   
-  // Check if origin matches Vercel preview deployment pattern
+  // Check if origin matches Vercel deployment pattern (all *.vercel.app subdomains)
   if (vercelPattern.test(origin)) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[CORS] Allowing Vercel origin: ${origin}`);
+    }
     return callback(null, true);
   }
   
-  // Origin not allowed
+  // Origin not allowed - log for debugging
+  if (process.env.NODE_ENV === 'development') {
+    console.warn(`[CORS] Blocked origin: ${origin}`);
+    console.warn(`[CORS] Allowed origins:`, allowedOrigins);
+  }
   callback(null, false);
 };
 
