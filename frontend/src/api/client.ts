@@ -3,7 +3,7 @@ import axios from 'axios';
 // Get API URL from environment variable or use default
 let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
-// Validate and normalize API URL
+// Validate URL helper function
 const isValidAbsoluteUrl = (url: string): boolean => {
   try {
     const urlObj = new URL(url);
@@ -13,58 +13,56 @@ const isValidAbsoluteUrl = (url: string): boolean => {
   }
 };
 
-// Check if API_URL is missing or invalid in production
-if (import.meta.env.MODE === 'production') {
-  if (!import.meta.env.VITE_API_URL) {
-    console.error(
-      '[API Config Error] VITE_API_URL is not set in Vercel environment variables!',
-      '\nPlease set VITE_API_URL to your backend URL (e.g., https://fitplate-production.up.railway.app/api)',
-      '\nCurrent API_URL will be:', API_URL
-    );
-  } else if (!isValidAbsoluteUrl(API_URL)) {
-    console.error(
-      '[API Config Error] VITE_API_URL must be an absolute URL with protocol (http:// or https://)',
-      '\nCurrent value:', import.meta.env.VITE_API_URL,
-      '\nExpected format: https://your-backend-domain.com/api'
-    );
-    // In production, if URL is invalid, we should throw an error to prevent deployment
-    throw new Error(
-      `Invalid VITE_API_URL: "${import.meta.env.VITE_API_URL}". Must be an absolute URL starting with http:// or https://`
-    );
-  }
+// STEP 1: Auto-fix missing protocol FIRST (before validation)
+if (API_URL && !API_URL.startsWith('http://') && !API_URL.startsWith('https://')) {
+  // If it's missing protocol, prepend https:// (production) or http:// (dev)
+  const protocol = import.meta.env.MODE === 'production' ? 'https://' : 'http://';
+  console.warn(
+    `[API Config] VITE_API_URL missing protocol, auto-fixing: ${protocol}${API_URL}`
+  );
+  API_URL = `${protocol}${API_URL}`;
 }
 
-// Ensure API URL is absolute (starts with http:// or https://)
-if (!API_URL.startsWith('http://') && !API_URL.startsWith('https://')) {
-  // If it's not absolute, prepend https:// (assuming production)
-  if (import.meta.env.MODE === 'production') {
-    console.warn(
-      '[API Config Warning] VITE_API_URL missing protocol, prepending https://',
-      '\nOriginal:', API_URL
-    );
-    API_URL = `https://${API_URL}`;
-  } else {
-    // In development, default to localhost
-    API_URL = 'http://localhost:5001/api';
-  }
-}
-
-// Normalize the URL: remove trailing slashes, then ensure /api is at the end
+// STEP 2: Normalize the URL - remove trailing slashes, then ensure /api is at the end
 API_URL = API_URL.replace(/\/+$/, ''); // Remove trailing slashes
 if (!API_URL.endsWith('/api')) {
+  // Only add /api if it's not already there
   API_URL = `${API_URL}/api`;
 }
 
-// Log API URL in production for debugging
+// STEP 3: Validate (non-fatal - just warnings)
 if (import.meta.env.MODE === 'production') {
-  console.log('[API Config] Using API URL:', API_URL);
-} else {
-  console.log('[API Config] Development API URL:', API_URL);
+  if (!import.meta.env.VITE_API_URL) {
+    console.error(
+      '[API Config Warning] VITE_API_URL is not set in Vercel environment variables!',
+      '\nUsing default:', API_URL,
+      '\nPlease set VITE_API_URL in Vercel: https://fitplate-production.up.railway.app/api'
+    );
+  } else if (!isValidAbsoluteUrl(API_URL)) {
+    console.error(
+      '[API Config Warning] VITE_API_URL is invalid after auto-fix:',
+      API_URL,
+      '\nPlease set VITE_API_URL to: https://fitplate-production.up.railway.app/api'
+    );
+    // Fallback to a default production URL instead of crashing
+    API_URL = 'https://fitplate-production.up.railway.app/api';
+    console.warn('[API Config] Using fallback URL:', API_URL);
+  }
 }
 
-// Final validation
+// Final check - ensure we have a valid URL (use fallback if needed)
 if (!isValidAbsoluteUrl(API_URL)) {
-  throw new Error(`Invalid API_URL after normalization: "${API_URL}". Must be an absolute URL.`);
+  console.error('[API Config] URL validation failed, using fallback');
+  API_URL = import.meta.env.MODE === 'production' 
+    ? 'https://fitplate-production.up.railway.app/api'
+    : 'http://localhost:5001/api';
+}
+
+// Log final API URL for debugging
+if (import.meta.env.MODE === 'production') {
+  console.log('[API Config] Production API URL:', API_URL);
+} else {
+  console.log('[API Config] Development API URL:', API_URL);
 }
 
 export const apiClient = axios.create({
