@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { errorHandler } from './middleware/errorHandler';
 import { rateLimiter } from './middleware/rateLimiter';
+import prisma from './utils/db';
 
 dotenv.config();
 
@@ -138,7 +139,29 @@ app.use('/api/payments', paymentRoutes);
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
+// Health check with database connection test
+app.get('/health', async (req: Request, res: Response) => {
+  try {
+    // Test database connection by checking if users table exists
+    await prisma.$queryRaw`SELECT 1 FROM users LIMIT 1`;
+    res.json({ 
+      status: 'ok', 
+      timestamp: new Date().toISOString(),
+      database: 'connected'
+    });
+  } catch (error: any) {
+    res.status(503).json({ 
+      status: 'error', 
+      timestamp: new Date().toISOString(),
+      database: 'error',
+      message: error.message,
+      hint: 'Database migrations may not have run. Check Railway logs for migration errors.'
+    });
+  }
+});
+
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📊 Health check: http://localhost:${PORT}/health`);
 });
 

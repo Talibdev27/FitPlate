@@ -472,6 +472,20 @@ This is the most cost-effective option, deploying frontend to Vercel (free tier)
    - Your backend will be available at: `https://your-backend-name.up.railway.app`
    - Note the backend URL - you'll need it for the frontend
 
+7. **Verify Database Migrations Ran**
+   - After deployment, check Railway logs for: `[Migration] Migrations completed successfully`
+   - If you see error "table does not exist", migrations didn't run
+   - **Manual Migration Fix**: If migrations didn't run automatically:
+     1. Go to Railway dashboard → Your backend service
+     2. Click "Deployments" tab
+     3. Click on the latest deployment
+     4. Open the "Terminal" tab (or use Railway CLI)
+     5. Run: `npx prisma migrate deploy`
+     6. Check logs to confirm migrations completed
+   - Test health endpoint: `https://your-backend-name.up.railway.app/health`
+     - Should return: `{"status":"ok","database":"connected"}`
+     - If error: migrations didn't run or database isn't connected
+
 #### Step 2: Deploy Frontend to Vercel
 
 1. **Create Vercel Account**
