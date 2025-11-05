@@ -37,7 +37,12 @@ function App() {
         <header className="bg-gradient-to-r from-emerald-600 to-green-600 shadow-lg sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
             <h1 className="text-3xl font-extrabold text-white flex items-center gap-2">
-              <span>🥗</span>
+              <img 
+                src="/fitplate-logo.svg" 
+                alt="FitPlate Logo" 
+                className="h-8 w-auto"
+                style={{ filter: 'brightness(0) invert(1)' }}
+              />
               <span>{t('app.title', 'FitPlate')}</span>
             </h1>
             <LanguageSwitcher />
