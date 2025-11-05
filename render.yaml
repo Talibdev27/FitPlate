@@ -45,9 +45,19 @@ services:
       - key: EMAIL_FROM_ADDRESS
         sync: false
 
+  # Frontend Static Site
+  - type: static
+    name: fitplate-frontend
+    region: oregon
+    buildCommand: cd frontend && npm ci && npm run build
+    publishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+        # Set this to your backend service URL after deployment
+        # Example: https://fitplate-backend.onrender.com/api
+
   # PostgreSQL Database
-  # Note: Frontend Static Site must be created manually in Render dashboard
-  # Static sites are not supported in render.yaml blueprints
 databases:
   - name: fitplate-db
     databaseName: food_delivery

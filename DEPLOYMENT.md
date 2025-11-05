@@ -440,9 +440,16 @@ This is the most cost-effective option, deploying frontend to Vercel (free tier)
    - Railway will auto-detect the backend (it looks for `backend/` directory or `railway.toml`)
    - **CRITICAL - Root Directory**: 
      - Click on your backend service → "Settings" tab
-     - Find "Root Directory" setting
-     - Set it to: `backend` (without quotes)
+     - Look for "Root Directory" or "Source" section
+     - If you don't see it in Settings, check:
+       - Scroll down in Settings - it might be below "Watch Paths"
+       - Or go to "Source" tab (if available) and look for root directory
+       - Some Railway versions show it when you first create the service
+     - Set Root Directory to: `backend` (without quotes)
      - **This is ESSENTIAL** - without it, Railway will try to build from repo root and fail
+     - **Alternative**: If Root Directory isn't visible, Railway might auto-detect from `railway.toml` location
+       - Make sure `backend/railway.toml` exists (it does)
+       - Railway should detect it, but if build fails, Root Directory must be set explicitly
      - Save changes
    - Railway will use the `backend/railway.toml` or `backend/nixpacks.toml` configuration automatically
 
@@ -477,19 +484,50 @@ This is the most cost-effective option, deploying frontend to Vercel (free tier)
    - Your backend will be available at: `https://your-backend-name.up.railway.app`
    - Note the backend URL - you'll need it for the frontend
 
-7. **Verify Database Migrations Ran**
-   - After deployment, check Railway logs for: `[Migration] Migrations completed successfully`
-   - If you see error "table does not exist", migrations didn't run
-   - **Manual Migration Fix**: If migrations didn't run automatically:
-     1. Go to Railway dashboard → Your backend service
-     2. Click "Deployments" tab
-     3. Click on the latest deployment
-     4. Open the "Terminal" tab (or use Railway CLI)
-     5. Run: `npx prisma migrate deploy`
-     6. Check logs to confirm migrations completed
-   - Test health endpoint: `https://your-backend-name.up.railway.app/health`
-     - Should return: `{"status":"ok","database":"connected"}`
-     - If error: migrations didn't run or database isn't connected
+7. **VERIFY DATABASE MIGRATIONS RAN (CRITICAL STEP)**
+   
+   **After deployment, you MUST check if migrations ran:**
+   
+   - Check Railway logs for: `[Migration] Migrations completed successfully`
+   - If you see error "table does not exist" in frontend, migrations didn't run
+   
+   **If Migrations Didn't Run - Run Them Manually:**
+   
+   **Option 1: Railway Dashboard Terminal (Easiest)**
+   1. Go to Railway dashboard → Your backend service (`fitplate-production`)
+   2. Click on the service to open it
+   3. Look for "Deployments" tab → Click on it
+   4. Find the latest deployment → Click on it
+   5. Look for "Terminal" or "Shell" tab/button → Click it
+   6. In the terminal, run:
+      ```bash
+      npx prisma migrate deploy
+      ```
+   7. You should see output like:
+      ```
+      Applying migration `20251103185642_init`
+      Applying migration `20251103190523_make_phone_optional`
+      ```
+   8. If successful, you'll see: `All migrations have been applied`
+   
+   **Option 2: Railway CLI (If you have it installed)**
+   ```bash
+   railway login
+   railway link  # Link to your project
+   railway run npx prisma migrate deploy
+   ```
+   
+   **Option 3: Force Redeploy (If terminal doesn't work)**
+   1. Go to Railway → Your backend service
+   2. Click "Settings" → "Deployments"
+   3. Find latest deployment → Click "Redeploy"
+   4. Watch logs to see if migrations run
+   
+   **Verify Migrations Worked:**
+   - Test health endpoint: `https://fitplate-production.up.railway.app/health`
+   - Should return: `{"status":"ok","database":"connected","timestamp":"..."}`
+   - If you see error about tables, migrations still didn't run
+   - Try the frontend login again - should work now
 
 #### Step 2: Deploy Frontend to Vercel
 
