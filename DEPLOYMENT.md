@@ -456,12 +456,15 @@ This is the most cost-effective option, deploying frontend to Vercel (free tier)
      - Cloudinary: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
      - SMS/Email (optional): `SMS_API_KEY`, `SMS_API_URL`, `EMAIL_SERVICE_API_KEY`, `EMAIL_FROM_ADDRESS`
 
-5. **Link Database to Backend**
+5. **Link Database to Backend (CRITICAL - Required for Backend to Work)**
    - In Railway, go to your backend service
    - Click "Variables" tab
    - Click "+ Add Variable" → "Reference Variable"
-   - Select your PostgreSQL database → `DATABASE_URL`
-   - This automatically sets the connection string
+   - Select your PostgreSQL database service
+   - Select the variable name: `DATABASE_URL`
+   - Click "Add"
+   - **VERIFY**: You should see `DATABASE_URL` in your variables list with a value starting with `postgresql://`
+   - **IMPORTANT**: If you don't see `DATABASE_URL` or it's not linked, your backend will fail with "Can't reach database server" error
 
 6. **Deploy**
    - Railway will automatically build and deploy
