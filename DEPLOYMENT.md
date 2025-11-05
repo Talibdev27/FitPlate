@@ -438,8 +438,13 @@ This is the most cost-effective option, deploying frontend to Vercel (free tier)
    - In Railway project, click "+ New" → "GitHub Repo" (if not already connected)
    - Select your repository again
    - Railway will auto-detect the backend (it looks for `backend/` directory or `railway.toml`)
-   - **Root Directory**: Set to `backend` (important!)
-   - Railway will use the `backend/railway.toml` configuration automatically
+   - **CRITICAL - Root Directory**: 
+     - Click on your backend service → "Settings" tab
+     - Find "Root Directory" setting
+     - Set it to: `backend` (without quotes)
+     - **This is ESSENTIAL** - without it, Railway will try to build from repo root and fail
+     - Save changes
+   - Railway will use the `backend/railway.toml` or `backend/nixpacks.toml` configuration automatically
 
 4. **Configure Backend Environment Variables**
    - In Railway, go to your backend service → "Variables" tab
